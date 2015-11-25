@@ -1,17 +1,16 @@
 library(shinydashboard)
 source("helpers.R")
-andmed=read.csv("./andmed/2015-11-24_andmedPikk.csv")
+andmed=readRDS("./andmed/2015-11-25_andmedPikk.rds")
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
 
 
 server <- function(input, output) {
-#ministeeriumi teenuste arv
+  ##########ministeeriumi asjad
+  #ministeeriumi teenuste arv
   output$MinTeenusteArv <- renderValueBox({
-    valueBox(
-      paste(length(unique(andmed[andmed$ministeerium==input$ministeerium,]$identifikaator))), 
-      "kaardistatud teenust",icon = icon("list-ol"),color = "purple"
-    )
+    TeenusteSum(andmed=andmed, minist=input$ministeerium, minJah=1)
   })
+  
   #asutuste arv ministeeriumi haldusalas
   output$MinAsutusteArv <- renderValueBox({
     valueBox(
@@ -19,47 +18,75 @@ server <- function(input, output) {
       "allasutust",icon = icon("home"),color = "purple"
     )
   })
-  #teenuseid kanali kohta
+  
+  #plot ministeeriumi teenuseid kanali kohta
   output$TeenuseidKanalisMin <- renderPlot({
     data <- summeerija2(andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja=="rahulolu",], c("kanal", "identifikaator", "naitaja"))
     visualiseerija2(data, aes(x=kanal, y=arv),"")+ ggtitle("Teenuste arv kanalite lõikes")
   })
-  #ministeeriumi moodikuid kanali kohta
+  
+  # plotministeeriumi moodikuid kanali kohta
   output$MoodikuidMin <- renderPlot({
     data <- summeerija(andmed[andmed$ministeerium==input$ministeerium,], c("naitaja"))
     visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr), "")+ 
       ggtitle("Järgmiste mõõdikuga teenuste osakaal:")
   })
+  
   #ministeeriumi kasutuskordade arv kokku
   output$MinKasutuskordi <- renderValueBox({
-    valueBox(
-      paste(sum(andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja=="osutamistearv",]$value, na.rm = T)), 
-      "korda kasutati teenuseid",icon = icon("hand-o-left"),color = "purple")
+    KasutuskordadeSum(andmed=andmed, minist=input$ministeerium, minJah=1)
   })
-  #minsteeriumi rahulolu
-  output$MinRahulolu <- renderValueBox({
-    valueBox(
-      paste(round(
-        mean(
-          andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja=="rahulolu",]$value, na.rm = T), 1)), 
-      "% keskmine rahulolu",icon = icon("smile-o"),color = "purple")
+  #minsteeriumi keskmine rahulolu
+   output$MinRahulolu <- renderValueBox({
+  KeskmineRahulolu(andmed=andmed, minist=input$ministeerium, minJah=1)
   })
-#ministeeriumi maksumus
+#ministeeriumi teenuste maksumus
     output$MinMaksumus <- renderValueBox({
-    valueBox(
-      paste(
-        sum(
-          andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja=="maksumus",]$value, na.rm = T)), 
-      "teenuste kulu riigile",icon = icon("euro"),color = "purple")
+      HalduskuluSum(andmed=andmed, minist=input$ministeerium, minJah=1)
   })
-    #ministeeriumi ajakulu
+    #ministeeriumi teenuste ajakulu
     output$MinAjakulu <- renderValueBox({
-      valueBox(
-        paste(
-          round(
-          mean(
-            andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja=="ajakulu",]$value, na.rm = T)*
-            mean(andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja=="osutamistearv",]$value, na.rm = T),1)), 
-        "tundi kogu ajakulu klientidele",icon = icon("clock-o"),color = "purple")
+      KliendiAjakuluSum(andmed=andmed, minist=input$ministeerium, minJah=1)
     })
-  }
+    
+    ############################allasutuste asjad
+    ##interaktiivselt kuvab asutused, mis valitud minni al on
+    output$allasutus <- renderUI({
+      selectInput("asutus", "", as.character(unique(andmed[andmed$ministeerium==input$ministeerium2,]$allasutus)))
+    })
+    
+    #allasutuse teenuste arv
+    output$AsutTeenusteArv <- renderValueBox({
+      TeenusteSum(andmed=andmed, allasutus =input$asutus, minJah=0)
+    })
+    #plot teenuseid kanalis 
+    output$TeenuseidKanalisAsut <- renderPlot({
+      data <- summeerija2(andmed[andmed$allasutus==input$asutus&andmed$naitaja=="rahulolu",], c("kanal", "identifikaator", "naitaja"))
+      visualiseerija2(data, aes(x=kanal, y=arv),"")+ ggtitle("Teenuste arv kanalite lõikes")
+    })
+    
+    # plot asutuse moodikuid kanali kohta
+    output$MoodikuidAsut <- renderPlot({
+      data <- summeerija(andmed[andmed$allasutus==input$asutus,], c("naitaja"))
+      visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr), "")+ 
+        ggtitle("Järgmiste mõõdikuga teenuste osakaal:")
+    })
+    #asutuse kasutuskordade arv kokku
+    output$AsutKasutuskordi <- renderValueBox({
+      KasutuskordadeSum(andmed=andmed, allasutus=input$asutus, minJah=0)
+    })
+    #asutuse keskmine rahulolu
+    output$AsutRahulolu <- renderValueBox({
+      KeskmineRahulolu(andmed=andmed, allasutus=input$asutus, minJah=0)
+    })
+    #asutuse teenuste maksumus
+    output$AsutMaksumus <- renderValueBox({
+      HalduskuluSum(andmed=andmed, allasutus=input$asutus, minJah=0)
+    })
+    #ministeeriumi teenuste ajakulu
+    output$AsutAjakulu <- renderValueBox({
+      KliendiAjakuluSum(andmed=andmed, allasutus=input$asutus, minJah=0)
+    })
+}
+
+

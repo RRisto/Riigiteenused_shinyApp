@@ -1,7 +1,7 @@
 library(shinydashboard)
 source("helpers.R")
 
-andmed=read.csv("./andmed/2015-11-24_andmedPikk.csv")
+andmed=readRDS("./andmed/2015-11-25_andmedPikk.rds")
 #ministeeriumite nimed dropdowni
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
 minnid=as.character(unique(andmed$ministeerium))
@@ -31,9 +31,10 @@ dashboardPage(
       ####ministeeriumite lõikes body
       tabItem(tabName = "minloikes",
               fluidRow(box(width=4,title = "Haldusala",solidHeader = TRUE,
-                           background = "light-blue", collapsible = TRUE,
+                           background = "light-blue", collapsible = F,
+                           "Vali haldusala",
                            selectInput("ministeerium", label = h6(""),
-                                       minnid), height=100),
+                                       minnid), height=150),
                        width=4, valueBoxOutput("MinTeenusteArv"),
                       width=4, valueBoxOutput("MinAsutusteArv")
               ),
@@ -49,9 +50,20 @@ dashboardPage(
       ),
       ####asutuste lõikes body
       tabItem(tabName = "asutloikes",
-              fluidRow(box(width=4,title = "Sisendid",background = "light-blue", 
-                           selectInput("asutused", 
-                                       label = h5("Asutus"), asutused))
+              fluidRow(box(width=4,title = "Allasutus",background = "light-blue",
+                           solidHeader = TRUE,  "Vali haldusala",
+                           selectInput("ministeerium2", label = h6(""), minnid),
+                           "Vali allasutus",
+                           #selectInput("asutus", label = h6(""), asutused),
+                           uiOutput("allasutus"),
+                           height=250),
+                       box(width=8, plotOutput("TeenuseidKanalisAsut", height = 250)),
+                       box(width=4, plotOutput("MoodikuidAsut", height = 250)),
+                       width=4, valueBoxOutput("AsutTeenusteArv"),
+                       valueBoxOutput("AsutKasutuskordi"),
+                        valueBoxOutput("AsutRahulolu"),
+                       valueBoxOutput("AsutMaksumus"),
+                       valueBoxOutput("AsutAjakulu")
               )
       )
     )
