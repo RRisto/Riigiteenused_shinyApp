@@ -1,0 +1,18 @@
+{
+    "contents" : "###Readme\n\nRiigiteenuste [masinloetavate andmete](https://www.riigiteenused.ee/api/et/all, \"https://www.riigiteenused.ee/api/et/all\") viisamakas kuvamiseks loodud äpi kood. ",
+    "created" : 1448432873287.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3937455106",
+    "id" : "8CB1CB56",
+    "lastKnownWriteTime" : 1448432967,
+    "path" : "~/R/Riigiteenused_shiny/readme.Rmd",
+    "project_path" : "readme.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}
