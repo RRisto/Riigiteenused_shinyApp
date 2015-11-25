@@ -1,6 +1,6 @@
 library(shinydashboard)
 source("helpers.R")
-andmed=read.table("./andmed/2015-11-24_andmedPikk.txt", sep=";", header=T)
+andmed=read.csv("./andmed/2015-11-24_andmedPikk.csv")
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
 
 

@@ -1,4 +1,5 @@
 #########sIgasugu abifunktsioone
+
 #abifunktsioon andmete summeerimiseks
 summeerija=function(data, ...) { #... paned jutumärkidesse variabled mille järgi grupeerida
   library(dplyr)

@@ -1,0 +1,17 @@
+{
+    "contents" : "library(shinydashboard)\nsource(\"helpers.R\")\nandmed=read.csv(\"./andmed/2015-11-24_andmedPikk.csv\")\nandmed$ministeerium=gsub(\"i haldusala\", \"\", andmed$ministeerium)\n\n\nserver <- function(input, output) {\n#ministeeriumi teenuste arv\n  output$MinTeenusteArv <- renderValueBox({\n    valueBox(\n      paste(length(unique(andmed[andmed$ministeerium==input$ministeerium,]$identifikaator))), \n      \"kaardistatud teenust\",icon = icon(\"list-ol\"),color = \"purple\"\n    )\n  })\n  #asutuste arv ministeeriumi haldusalas\n  output$MinAsutusteArv <- renderValueBox({\n    valueBox(\n      paste(length(unique(andmed[andmed$ministeerium==input$ministeerium,]$allasutus))), \n      \"allasutust\",icon = icon(\"home\"),color = \"purple\"\n    )\n  })\n  #teenuseid kanali kohta\n  output$TeenuseidKanalisMin <- renderPlot({\n    data <- summeerija2(andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja==\"rahulolu\",], c(\"kanal\", \"identifikaator\", \"naitaja\"))\n    visualiseerija2(data, aes(x=kanal, y=arv),\"\")+ ggtitle(\"Teenuste arv kanalite lõikes\")\n  })\n  #ministeeriumi moodikuid kanali kohta\n  output$MoodikuidMin <- renderPlot({\n    data <- summeerija(andmed[andmed$ministeerium==input$ministeerium,], c(\"naitaja\"))\n    visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr), \"\")+ \n      ggtitle(\"Järgmiste mõõdikuga teenuste osakaal:\")\n  })\n  #ministeeriumi kasutuskordade arv kokku\n  output$MinKasutuskordi <- renderValueBox({\n    valueBox(\n      paste(sum(andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja==\"osutamistearv\",]$value, na.rm = T)), \n      \"korda kasutati teenuseid\",icon = icon(\"hand-o-left\"),color = \"purple\")\n  })\n  #minsteeriumi rahulolu\n  output$MinRahulolu <- renderValueBox({\n    valueBox(\n      paste(round(\n        mean(\n          andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja==\"rahulolu\",]$value, na.rm = T), 1)), \n      \"% keskmine rahulolu\",icon = icon(\"smile-o\"),color = \"purple\")\n  })\n#ministeeriumi maksumus\n    output$MinMaksumus <- renderValueBox({\n    valueBox(\n      paste(\n        sum(\n          andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja==\"maksumus\",]$value, na.rm = T)), \n      \"teenuste kulu riigile\",icon = icon(\"euro\"),color = \"purple\")\n  })\n    #ministeeriumi ajakulu\n    output$MinAjakulu <- renderValueBox({\n      valueBox(\n        paste(\n          round(\n          mean(\n            andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja==\"ajakulu\",]$value, na.rm = T)*\n            mean(andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja==\"osutamistearv\",]$value, na.rm = T),1)), \n        \"tundi kogu ajakulu klientidele\",icon = icon(\"clock-o\"),color = \"purple\")\n    })\n  }\n",
+    "created" : 1448302550735.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "217347225",
+    "id" : "2A401D4E",
+    "lastKnownWriteTime" : 1448442237,
+    "path" : "~/R/Riigiteenused_shiny/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
