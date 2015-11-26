@@ -1,12 +1,10 @@
 library(shinydashboard)
+library(data.table)
 source("helpers.R")
 
 andmed=readRDS("./andmed/2015-11-25_andmedPikk.rds")
-#ministeeriumite nimed dropdowni
+andmed=data.table(andmed)
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
-minnid=as.character(unique(andmed$ministeerium))
-#asutused dropdowni
-asutused=as.character(unique(andmed$allasutus))
 
 ####rakenduse interface
 dashboardPage(
@@ -25,7 +23,17 @@ dashboardPage(
     tabItems(
       ###üldine body
       tabItem(tabName = "uldine",
-              fluidRow(box(h2("siia sisu"))
+              fluidRow(width=4, valueBoxOutput("MinArv"),
+                       width=4, valueBoxOutput("AsutusteArv"),
+                       width=4, valueBoxOutput("TeenusteArv")),
+              fluidRow(
+                box(width=6, plotOutput("TeenuseidKanalis", height = 250)),
+                box(width=6, plotOutput("Moodikuid", height = 250))),
+              fluidRow(
+                width=4, valueBoxOutput("Kasutuskordi"),
+                width=4, valueBoxOutput("Rahulolu"),
+                width=4, valueBoxOutput("Maksumus"),
+                width=4, valueBoxOutput("Ajakulu")
               )
       ),
       ####ministeeriumite lõikes body
@@ -33,8 +41,7 @@ dashboardPage(
               fluidRow(box(width=4,title = "Haldusala",solidHeader = TRUE,
                            background = "light-blue", collapsible = F,
                            "Vali haldusala",
-                           selectInput("ministeerium", label = h6(""),
-                                       minnid), height=150),
+                           uiOutput("ministeerium"), height=150),
                        width=4, valueBoxOutput("MinTeenusteArv"),
                       width=4, valueBoxOutput("MinAsutusteArv")
               ),
@@ -52,11 +59,8 @@ dashboardPage(
       tabItem(tabName = "asutloikes",
               fluidRow(box(width=4,title = "Allasutus",background = "light-blue",
                            solidHeader = TRUE,  "Vali haldusala",
-                           selectInput("ministeerium2", label = h6(""), minnid),
-                           "Vali allasutus",
-                           #selectInput("asutus", label = h6(""), asutused),
-                           uiOutput("allasutus"),
-                           height=250),
+                           uiOutput("ministeerium2"),
+                           "Vali allasutus", uiOutput("allasutus"), height=250),
                        box(width=8, plotOutput("TeenuseidKanalisAsut", height = 250)),
                        box(width=4, plotOutput("MoodikuidAsut", height = 250)),
                        width=4, valueBoxOutput("AsutTeenusteArv"),

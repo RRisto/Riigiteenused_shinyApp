@@ -23,7 +23,8 @@ visualiseerija=function(data, mapping, ylab) {
     xlab("")+
     ylab(ylab)+
     coord_cartesian(ylim=c(0,1))+
-    scale_y_discrete(labels = percent)
+    scale_y_discrete(labels = percent)+
+    ggtitle("Järgmiste mõõdikuga teenuste osakaal:")
 }
 
 #summeerija, ei tooda protsente
@@ -34,7 +35,7 @@ summeerija2=function(data, ...) { #... paned jutumärkidesse variabled mille jä
     summarize(arv=n()) 
   tulem
 }
-#ja eelenva andmete alusel graafiku tegemiseks
+#ja eelneva andmete alusel graafiku tegemiseks
 visualiseerija2=function(data, mapping, ylab) {
   library(ggplot2)
   ggplot(data, mapping)+
@@ -42,13 +43,16 @@ visualiseerija2=function(data, mapping, ylab) {
     theme_minimal()+
     theme(axis.text.x = element_text(angle = 45, hjust=1, size=13))+
     xlab("")+
-    ylab(ylab)
+    ylab(ylab)+
+    ggtitle(enc2native("Teenuste arv kanalite lõikes"))
 }
 #teenuste arv minni/asutuse haldusalas, teeb valueboxi interface
 TeenusteSum=function(andmed, minist, allasutus, minJah) {
   if (minJah==1) { #kui muu, siis on allasutus
     andmed=andmed[andmed$ministeerium==minist,]
-  } else {
+  } else if (minJah==2) {
+    andmed=andmed
+  } else    {
     andmed=andmed[andmed$allasutus==allasutus,]
   }
   valueBox(
@@ -60,7 +64,9 @@ TeenusteSum=function(andmed, minist, allasutus, minJah) {
 KasutuskordadeSum=function(andmed, minist, allasutus, minJah) {
   if (minJah==1) { #kui muu, siis on allasutus
     andmed=andmed[andmed$ministeerium==minist,]
-  } else {
+  } else if (minJah==2) {
+    andmed=andmed
+  }else {
     andmed=andmed[andmed$allasutus==allasutus,]
   }
   valueBox(
@@ -72,7 +78,9 @@ KasutuskordadeSum=function(andmed, minist, allasutus, minJah) {
 KeskmineRahulolu=function(andmed, minist, allasutus, minJah) {
   if (minJah==1) { #kui muu, siis on allasutus
     andmed=andmed[andmed$ministeerium==minist,]
-  } else {
+  } else if (minJah==2) {
+    andmed=andmed
+  }else {
     andmed=andmed[andmed$allasutus==allasutus,]
   }
   valueBox(
@@ -86,7 +94,9 @@ KeskmineRahulolu=function(andmed, minist, allasutus, minJah) {
 HalduskuluSum=function(andmed, minist, allasutus, minJah) {
   if (minJah==1) { #kui muu, siis on allasutus
     andmed=andmed[andmed$ministeerium==minist,]
-  } else {
+  } else if (minJah==2) {
+    andmed=andmed
+  }else {
     andmed=andmed[andmed$allasutus==allasutus,]
   }
   valueBox(
@@ -101,13 +111,15 @@ HalduskuluSum=function(andmed, minist, allasutus, minJah) {
 KliendiAjakuluSum=function(andmed, minist, allasutus, minJah) {
   if (minJah==1) { #kui muu, siis on allasutus
     andmed=andmed[andmed$ministeerium==minist,]
-  } else {
+  } else if (minJah==2) {
+    andmed=andmed
+  }else {
     andmed=andmed[andmed$allasutus==allasutus,]
   }
   osutamistearv=andmed[andmed$naitaja=="osutamistearv",]$value
   ajakulu=andmed[andmed$naitaja=="ajakulu",]$value
     valueBox(
       paste(paste(format(round(sum(ajakulu*osutamistearv ,na.rm=T)), big.mark=" "))), 
-      "tundi aega kulutasid kliendid",icon = icon("clock-o"),color = "purple")
+      "tundi kulutasid kliendid teenuste kasutamisele",icon = icon("clock-o"),color = "purple")
 }
 
