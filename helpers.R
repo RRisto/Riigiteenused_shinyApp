@@ -58,7 +58,7 @@ TeenusteSum=function(andmed, minist, allasutus, minJah) {
   valueBox(
     paste(length(unique(andmed$identifikaator))), 
     "kaardistatud teenust",icon = icon("list-ol"),color = "purple")
-  }
+}
 
 #kasutuskordade summa arvutamiseks, teeb vale boxi interface
 KasutuskordadeSum=function(andmed, minist, allasutus, minJah) {
@@ -118,8 +118,8 @@ KliendiAjakuluSum=function(andmed, minist, allasutus, minJah) {
   }
   osutamistearv=andmed[andmed$naitaja=="osutamistearv",]$value
   ajakulu=andmed[andmed$naitaja=="ajakulu",]$value
-    valueBox(
-      paste(paste(format(round(sum(ajakulu*osutamistearv ,na.rm=T)), big.mark=" "))), 
-      "tundi kulutasid kliendid teenuste kasutamisele",icon = icon("clock-o"),color = "purple")
+  valueBox(
+    paste(paste(format(round(sum(ajakulu*osutamistearv ,na.rm=T)), big.mark=" "))), 
+    "tundi kulutasid kliendid teenuste kasutamisele",icon = icon("clock-o"),color = "purple")
 }
 

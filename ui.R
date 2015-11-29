@@ -1,14 +1,9 @@
 library(shinydashboard)
-library(data.table)
 source("helpers.R")
-
-andmed=readRDS("./andmed/2015-11-25_andmedPikk.rds")
-andmed=data.table(andmed)
-andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
 
 ####rakenduse interface
 dashboardPage(
-  dashboardHeader(title = "",  titleWidth = 200),
+  dashboardHeader(title = "Riigiteenused",  titleWidth = 200),
   dashboardSidebar(
     width = 200,
     ####külgmenüü
@@ -16,7 +11,8 @@ dashboardPage(
       menuItem("Üldine", icon = icon("institution"),tabName = "uldine"),
       menuItem("Ministeeriumite lõikes", icon = icon("building"),
                tabName = "minloikes"),
-      menuItem("Asutuste lõikes", icon = icon("home"),tabName = "asutloikes")
+      menuItem("Asutuste lõikes", icon = icon("home"),tabName = "asutloikes"),
+      menuItem("Info", icon = icon("info"),tabName = "info")
     )
   ),
   dashboardBody(
@@ -43,16 +39,16 @@ dashboardPage(
                            "Vali haldusala",
                            uiOutput("ministeerium"), height=150),
                        width=4, valueBoxOutput("MinTeenusteArv"),
-                      width=4, valueBoxOutput("MinAsutusteArv")
+                       width=4, valueBoxOutput("MinAsutusteArv")
               ),
               fluidRow(
                 box(width=6, plotOutput("TeenuseidKanalisMin", height = 250)),
                 box(width=6, plotOutput("MoodikuidMin", height = 250))),
               fluidRow(
-              width=4, valueBoxOutput("MinKasutuskordi"),
-              width=4, valueBoxOutput("MinRahulolu"),
-              width=4, valueBoxOutput("MinMaksumus"),
-              width=4, valueBoxOutput("MinAjakulu")
+                width=4, valueBoxOutput("MinKasutuskordi"),
+                width=4, valueBoxOutput("MinRahulolu"),
+                width=4, valueBoxOutput("MinMaksumus"),
+                width=4, valueBoxOutput("MinAjakulu")
               )
       ),
       ####asutuste lõikes body
@@ -65,11 +61,18 @@ dashboardPage(
                        box(width=4, plotOutput("MoodikuidAsut", height = 250)),
                        width=4, valueBoxOutput("AsutTeenusteArv"),
                        valueBoxOutput("AsutKasutuskordi"),
-                        valueBoxOutput("AsutRahulolu"),
+                       valueBoxOutput("AsutRahulolu"),
                        valueBoxOutput("AsutMaksumus"),
                        valueBoxOutput("AsutAjakulu")
               )
-      )
+      ),
+      tabItem(tabName = "info",
+              fluidRow(box(width=12,"Tegemist riigiteenuste andmete 
+visualiseeringuga. Projekti kohta loe", tags$a(href="https://github.com/MKM-ITAO/riigiteenused", "siit."),
+                          "Kuna tegemist on pilootprojektiga ning mõõtmismetoodika 
+                          on kujunemisjärgus, on andmetest järelduste tegemine 
+omal vastutusel! Rakenduse kood on", 
+                          tags$a(href="https://github.com/RRisto/Riigiteenused_shinyApp", "siin."))))
     )
   )
 )

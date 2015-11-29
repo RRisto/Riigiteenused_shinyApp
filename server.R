@@ -1,8 +1,6 @@
 library(shinydashboard)
-library(data.table)
 source("helpers.R")
 andmed=readRDS("./andmed/2015-11-25_andmedPikk.rds")
-andmed=data.table(andmed)
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
 
 server <- function(input, output) {
@@ -16,7 +14,7 @@ server <- function(input, output) {
   #allasutuste arv üldine
   output$AsutusteArv <- renderValueBox({
     valueBox(paste(length(unique(andmed$allasutus))), 
-      "allasutust",icon = icon("home"),color = "purple" )
+             "allasutust",icon = icon("home"),color = "purple" )
   })
   #teenuste arv üldine
   output$TeenusteArv <- renderValueBox({
@@ -78,57 +76,57 @@ server <- function(input, output) {
     KasutuskordadeSum(andmed=andmed, minist=input$ministeerium, minJah=1)
   })
   #minsteeriumi keskmine rahulolu
-   output$MinRahulolu <- renderValueBox({
-  KeskmineRahulolu(andmed=andmed, minist=input$ministeerium, minJah=1)
+  output$MinRahulolu <- renderValueBox({
+    KeskmineRahulolu(andmed=andmed, minist=input$ministeerium, minJah=1)
   })
-#ministeeriumi teenuste maksumus
-    output$MinMaksumus <- renderValueBox({
-      HalduskuluSum(andmed=andmed, minist=input$ministeerium, minJah=1)
+  #ministeeriumi teenuste maksumus
+  output$MinMaksumus <- renderValueBox({
+    HalduskuluSum(andmed=andmed, minist=input$ministeerium, minJah=1)
   })
-    #ministeeriumi teenuste ajakulu
-    output$MinAjakulu <- renderValueBox({
-      KliendiAjakuluSum(andmed=andmed, minist=input$ministeerium, minJah=1)
-    })
-    
-    ############################allasutuste asjad
-    ##interaktiivselt kuvab minnide nimed dropdownis
-    output$ministeerium2 <- renderUI({
-      selectInput("ministeerium2", "", as.character(unique(andmed$ministeerium)))
-    })
-    ##interaktiivselt kuvab asutused, mis valitud minni al on
-    output$allasutus <- renderUI({
-      selectInput("asutus", "", as.character(unique(andmed[andmed$ministeerium==input$ministeerium2,]$allasutus)))
-    })
-    #allasutuse teenuste arv
-    output$AsutTeenusteArv <- renderValueBox({
-      TeenusteSum(andmed=andmed, allasutus =input$asutus, minJah=0)
-    })
-    #plot teenuseid kanalis 
-    output$TeenuseidKanalisAsut <- renderPlot({
-      data <- summeerija2(andmed[andmed$allasutus==input$asutus&andmed$naitaja=="rahulolu",], c("kanal", "identifikaator", "naitaja"))
-      visualiseerija2(data, aes(x=kanal, y=arv),"")
-    })
-    # plot asutuse moodikuid kanali kohta
-    output$MoodikuidAsut <- renderPlot({
-      data <- summeerija(andmed[andmed$allasutus==input$asutus,], c("naitaja"))
-      visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr), "")
-    })
-    #asutuse kasutuskordade arv kokku
-    output$AsutKasutuskordi <- renderValueBox({
-      KasutuskordadeSum(andmed=andmed, allasutus=input$asutus, minJah=0)
-    })
-    #asutuse keskmine rahulolu
-    output$AsutRahulolu <- renderValueBox({
-      KeskmineRahulolu(andmed=andmed, allasutus=input$asutus, minJah=0)
-    })
-    #asutuse teenuste maksumus
-    output$AsutMaksumus <- renderValueBox({
-      HalduskuluSum(andmed=andmed, allasutus=input$asutus, minJah=0)
-    })
-    #ministeeriumi teenuste ajakulu
-    output$AsutAjakulu <- renderValueBox({
-      KliendiAjakuluSum(andmed=andmed, allasutus=input$asutus, minJah=0)
-    })
+  #ministeeriumi teenuste ajakulu
+  output$MinAjakulu <- renderValueBox({
+    KliendiAjakuluSum(andmed=andmed, minist=input$ministeerium, minJah=1)
+  })
+  
+  ############################allasutuste asjad
+  ##interaktiivselt kuvab minnide nimed dropdownis
+  output$ministeerium2 <- renderUI({
+    selectInput("ministeerium2", "", as.character(unique(andmed$ministeerium)))
+  })
+  ##interaktiivselt kuvab asutused, mis valitud minni al on
+  output$allasutus <- renderUI({
+    selectInput("asutus", "", as.character(unique(andmed[andmed$ministeerium==input$ministeerium2,]$allasutus)))
+  })
+  #allasutuse teenuste arv
+  output$AsutTeenusteArv <- renderValueBox({
+    TeenusteSum(andmed=andmed, allasutus =input$asutus, minJah=0)
+  })
+  #plot teenuseid kanalis 
+  output$TeenuseidKanalisAsut <- renderPlot({
+    data <- summeerija2(andmed[andmed$allasutus==input$asutus&andmed$naitaja=="rahulolu",], c("kanal", "identifikaator", "naitaja"))
+    visualiseerija2(data, aes(x=kanal, y=arv),"")
+  })
+  # plot asutuse moodikuid kanali kohta
+  output$MoodikuidAsut <- renderPlot({
+    data <- summeerija(andmed[andmed$allasutus==input$asutus,], c("naitaja"))
+    visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr), "")
+  })
+  #asutuse kasutuskordade arv kokku
+  output$AsutKasutuskordi <- renderValueBox({
+    KasutuskordadeSum(andmed=andmed, allasutus=input$asutus, minJah=0)
+  })
+  #asutuse keskmine rahulolu
+  output$AsutRahulolu <- renderValueBox({
+    KeskmineRahulolu(andmed=andmed, allasutus=input$asutus, minJah=0)
+  })
+  #asutuse teenuste maksumus
+  output$AsutMaksumus <- renderValueBox({
+    HalduskuluSum(andmed=andmed, allasutus=input$asutus, minJah=0)
+  })
+  #ministeeriumi teenuste ajakulu
+  output$AsutAjakulu <- renderValueBox({
+    KliendiAjakuluSum(andmed=andmed, allasutus=input$asutus, minJah=0)
+  })
 }
 
 
