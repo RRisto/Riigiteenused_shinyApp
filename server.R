@@ -33,19 +33,19 @@ server <- function(input, output) {
   })
   #üldine kasutuskordade arv kokku
   output$Kasutuskordi <- renderValueBox({
-    KasutuskordadeSum(andmed=andmed, minist=input$ministeerium, minJah=1)
+    KasutuskordadeSum(andmed=andmed, minist=input$ministeerium, minJah=2)
   })
   #üldine keskmine rahulolu
   output$Rahulolu <- renderValueBox({
-    KeskmineRahulolu(andmed=andmed, minist=input$ministeerium, minJah=1)
+    KeskmineRahulolu(andmed=andmed, minist=input$ministeerium, minJah=2)
   })
   #üldine teenuste maksumus
   output$Maksumus <- renderValueBox({
-    HalduskuluSum(andmed=andmed, minist=input$ministeerium, minJah=1)
+    HalduskuluSum(andmed=andmed, minist=input$ministeerium, minJah=2)
   })
   #üldine teenuste ajakulu
   output$Ajakulu <- renderValueBox({
-    KliendiAjakuluSum(andmed=andmed, minist=input$ministeerium, minJah=1)
+    KliendiAjakuluSum(andmed=andmed, minist=input$ministeerium, minJah=2)
   })
   ##########ministeeriumi vaate asjad
   #ministeeriumite nimekiri dropdowni
