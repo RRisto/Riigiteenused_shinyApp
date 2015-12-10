@@ -13,7 +13,7 @@ dashboardPage(
                tabName = "minloikes"),
       menuItem("Asutuste lõikes", icon = icon("home"),tabName = "asutloikes"),
       menuItem("Info", icon = icon("info"),tabName = "info"),
-      menuItem(paste("Andmed: \n 09.12.2015"))
+      menuItem("Andmed: 10.12.2015,","kell 14:19")
     )
   ),
   dashboardBody(
