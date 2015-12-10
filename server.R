@@ -1,7 +1,7 @@
 library(shinydashboard)
 source("helpers.R")
 
-andmed=readRDS("./andmed/2015-11-30_andmedPikk.rds")
+andmed=readRDS("./andmed/2015-12-09_andmedPikk.rds")
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
 
 server <- function(input, output) {

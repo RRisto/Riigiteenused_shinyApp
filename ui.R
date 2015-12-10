@@ -12,7 +12,8 @@ dashboardPage(
       menuItem("Ministeeriumite lõikes", icon = icon("building"),
                tabName = "minloikes"),
       menuItem("Asutuste lõikes", icon = icon("home"),tabName = "asutloikes"),
-      menuItem("Info", icon = icon("info"),tabName = "info")
+      menuItem("Info", icon = icon("info"),tabName = "info"),
+      menuItem(paste("Andmed: \n 09.12.2015"))
     )
   ),
   dashboardBody(
@@ -67,12 +68,13 @@ dashboardPage(
               )
       ),
       tabItem(tabName = "info",
-              fluidRow(box(width=12,"Tegemist riigiteenuste andmete 
+            fluidRow(box(width=12,
+                         tags$h4("Tegemist riigiteenuste andmete 
 visualiseeringuga. Projekti kohta loe", tags$a(href="https://github.com/MKM-ITAO/riigiteenused", "siit."),
-                          "Kuna tegemist on pilootprojektiga ning mõõtmismetoodika 
-                          on kujunemisjärgus, on andmetest järelduste tegemine 
-omal vastutusel! Rakenduse kood on", 
+HTML(paste("Kuna tegemist on pilootprojektiga ning mõõtmismetoodika 
+           on kujunemisjärgus, on andmetest ", tags$span(style="color:red", "järelduste tegemine 
+omal vastutusel!"), sep = "")), "Rakenduse kood on", 
                           tags$a(href="https://github.com/RRisto/Riigiteenused_shinyApp", "siin."))))
-    )
+    ))
   )
 )
