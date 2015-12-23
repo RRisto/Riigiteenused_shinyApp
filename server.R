@@ -1,7 +1,9 @@
 library(shinydashboard)
 source("helpers.R")
+library(plotly)
+library(ggplot2)
 
-andmed=readRDS("./andmed/2015-12-18_andmedPikk.rds")
+andmed=readRDS("./andmed/2015-12-23_andmedPikk.rds")
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
 
 server <- function(input, output) {

@@ -75,7 +75,7 @@ HTML(paste("Kuna tegemist on pilootprojektiga ning mõõtmismetoodika
            on kujunemisjärgus, on andmetest ", tags$span(style="color:red", "järelduste tegemine 
 omal vastutusel!"), sep = "")), "Rakenduse kood on", 
                     a("siin.",target="_blank",href="https://github.com/RRisto/Riigiteenused_shinyApp"),
-"Andmed on seisuga 18.12.2015, kell 09:59."
+"Andmed on seisuga 23.12.2015, kell 08:23."
 )))
     ))
   )

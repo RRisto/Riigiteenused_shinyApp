@@ -27,6 +27,23 @@ visualiseerija=function(data, mapping, ylab) {
     ggtitle("Järgmiste mõõdikuga teenuste osakaal:")
 }
 
+# visualiseerija=function(data, mapping, ylab) {
+#   #localenv <- environment()
+#   #library(ggplot2)
+#   library(scales)
+#   #library(plotly)
+#   ggplot(data, mapping)+
+#     geom_bar(stat = "identity", fill="lightblue")+
+#     theme_minimal()+
+#     theme(axis.text.x = element_text(angle = 45, hjust=1, size=13))+
+#     xlab("")+
+#     ylab(ylab)+
+#     coord_cartesian(ylim=c(0,1))+
+#     scale_y_discrete(labels = percent)+
+#     ggtitle("Järgmiste mõõdikuga teenuste osakaal:")
+#   
+# }
+
 #summeerija, ei tooda protsente
 summeerija2=function(data, ...) { #... paned jutumärkidesse variabled mille järgi grupeerida
   library(dplyr)
