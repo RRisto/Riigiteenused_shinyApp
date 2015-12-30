@@ -1,12 +1,28 @@
 library(shinydashboard)
 source("helpers.R")
-library(plotly)
 library(ggplot2)
 
-andmed=readRDS("./andmed/2015-12-23_andmedPikk.rds")
+andmed=readRDS("./andmed/2015-12-30_andmedPikk.rds")
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
+# andmedLai=andmedSisse()
+# andmed=DataLong2(andmedLai)
+# andmed=andmed[!is.na(andmed$link),]
 
 server <- function(input, output) {
+  #######KUSTUTAMISEKS
+#   output$downloadData <- downloadHandler(
+#     filename = "andmed.csv",
+#     content = function(file) {
+#       write.table(andmed, file, sep=";")
+#     }
+#   )
+#   output$downloadData2 <- downloadHandler(
+#     filename = "andmedLai.csv",
+#     content = function(file) {
+#       write.table(andmedLai[, 1:9], file, sep=";")
+#     }
+#   )
+  #############
   ########üldise vaate asjad
   #ministeeriumite arv üldine
   output$MinArv <- renderValueBox({
