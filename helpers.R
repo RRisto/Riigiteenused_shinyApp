@@ -118,8 +118,8 @@ HalduskuluSum=function(andmed, minist, allasutus, minJah) {
   }
   valueBox(
     paste(
-      format(
-        sum(andmed[andmed$naitaja=="halduskulu",]$value, na.rm = T), big.mark=" ")), 
+      format(round(
+        sum(andmed[andmed$naitaja=="halduskulu",]$value, na.rm = T)), big.mark=" ")), 
     "teenuste kulu riigile",icon = icon("euro"),color = "purple")
 }
 
