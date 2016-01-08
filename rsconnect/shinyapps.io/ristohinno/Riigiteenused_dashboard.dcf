@@ -1,8 +1,8 @@
 name: Riigiteenused_dashboard
 account: ristohinno
 server: shinyapps.io
-bundleId: 344094
+bundleId: 345662
 url: https://ristohinno.shinyapps.io/Riigiteenused_dashboard/
-when: 1452080129.94762
+when: 1452246765.99889
 asMultiple: FALSE
 asStatic: FALSE
