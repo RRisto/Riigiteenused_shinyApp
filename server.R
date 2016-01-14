@@ -2,7 +2,7 @@ library(shinydashboard)
 source("helpers.R")
 library(ggplot2)
 
-andmed=readRDS("./andmed/2016-01-12_andmedPikk.rds")
+andmed=readRDS("./andmed/2016-01-14_andmedPikk.rds")
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
 # andmedLai=andmedSisse()
 # andmed=DataLong2(andmedLai)
