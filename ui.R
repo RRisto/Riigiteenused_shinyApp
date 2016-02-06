@@ -13,9 +13,9 @@ dashboardPage(
                tabName = "minloikes"),
       menuItem("Asutuste lõikes", icon = icon("home"),tabName = "asutloikes"),
       menuItem("Info", icon = icon("info"),tabName = "info")
-      ######KUSTUTAMISEKS
-#       downloadButton('downloadData', 'Download'),
-#       downloadButton('downloadData2', 'Download')
+      #####KUSTUTAMISEKS vaja ainult andmete rakendusest alla laadimiseks
+#             downloadButton('downloadData', 'Download'),
+#              downloadButton('downloadData2', 'Download')
       #################
     )
   ),
@@ -74,13 +74,14 @@ dashboardPage(
             fluidRow(box(width=12,
                          tags$h4("Tegemist on riigiteenuste andmete 
 visualiseeringuga. Projekti kohta loe", 
-                                 a("siit.",target="_blank",href="https://github.com/MKM-ITAO/riigiteenused"),
+                                 a("siit.",target="_blank",
+                                   href="https://github.com/MKM-ITAO/riigiteenused"),
 HTML(paste("Kuna tegemist on pilootprojektiga ning mõõtmismetoodika 
-           on kujunemisjärgus, on andmetest ", tags$span(style="color:red", "järelduste tegemine 
-omal vastutusel!"), sep = "")), "Rakenduse kood on", 
-                    a("siin.",target="_blank",href="https://github.com/RRisto/Riigiteenused_shinyApp"),
-"Andmed on seisuga 05.02.2016, kell 08:39."
+           on kujunemisjärgus, on andmetest ", 
+strong("järelduste tegemine omal vastutusel!"),
+ "Rakenduse kood on", a("siin.",target="_blank",
+                      href="https://github.com/RRisto/Riigiteenused_shinyApp")#,
+#"Andmed on seisuga", paste0(Sys.time(),".")
+))
 )))
-    ))
-  )
-)
+  ))))

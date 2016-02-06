@@ -12,6 +12,20 @@ andmed=andmedPikaks(andmedLai)
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
 
 server <- function(input, output) {
+  #######KUSTUTAMISEKS vaja ainult andmete rakendusest alla laadimiseks
+#     output$downloadData <- downloadHandler(
+#       filename = "andmed.csv",
+#       content = function(file) {
+#         write.table(andmed, file, sep=";")
+#       }
+#     )
+#     output$downloadData2 <- downloadHandler(
+#       filename = "andmedLai.csv",
+#       content = function(file) {
+#         write.table(andmedLai[, 1:9], file, sep=";")
+#       }
+#     )
+  #############
   ########üldise vaate asjad
   #ministeeriumite arv üldine
   output$MinArv <- renderValueBox({
