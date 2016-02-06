@@ -1,3 +1,3 @@
-###Readme
+###Riigiteenuste dashboard
 
-Riigiteenuste [masinloetavate andmete](https://www.riigiteenused.ee/api/et/all "https://www.riigiteenused.ee/api/et/all") viisamakas kuvamiseks loodud [äpi](https://ristohinno.shinyapps.io/Riigiteenused_dashboard "https://ristohinno.shinyapps.io/Riigiteenused_dashboard") kood. Kogu riigiteenuste kaardistamise kohta loe [siit](https://github.com/MKM-ITAO/riigiteenused "https://github.com/MKM-ITAO/riigiteenused"). 
+Riigiteenuste [masinloetavate andmete](https://www.riigiteenused.ee/api/et/all "https://www.riigiteenused.ee/api/et/all") inimloetavamaks kuvamiseks loodud [rakenduse](https://ristohinno.shinyapps.io/Riigiteenused_dashboard "https://ristohinno.shinyapps.io/Riigiteenused_dashboard") kood. Kogu riigiteenuste kaardistamise kohta loe [siit](https://github.com/MKM-ITAO/riigiteenused "https://github.com/MKM-ITAO/riigiteenused"). 

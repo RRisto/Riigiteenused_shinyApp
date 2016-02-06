@@ -1,28 +1,17 @@
 library(shinydashboard)
 source("helpers.R")
 library(ggplot2)
+library(rjson)
+library(riigiteenused)
+library(curl) #shiny server nõuab seda
 
-andmed=readRDS("./andmed/2016-02-05_andmedPikk.rds")
+# andmed=readRDS("./andmed/2016-02-05_andmedPikk.rds")
+# andmed sisse, pikaks ja minni nimedest haldusala maha
+andmedLai=riigiteenused::andmedSisse("https://www.riigiteenused.ee/api/et/all")
+andmed=andmedPikaks(andmedLai)
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
-# andmedLai=andmedSisse()
-# andmed=DataLong2(andmedLai)
-# andmed=andmed[!is.na(andmed$link),]
 
 server <- function(input, output) {
-  #######KUSTUTAMISEKS
-#   output$downloadData <- downloadHandler(
-#     filename = "andmed.csv",
-#     content = function(file) {
-#       write.table(andmed, file, sep=";")
-#     }
-#   )
-#   output$downloadData2 <- downloadHandler(
-#     filename = "andmedLai.csv",
-#     content = function(file) {
-#       write.table(andmedLai[, 1:9], file, sep=";")
-#     }
-#   )
-  #############
   ########üldise vaate asjad
   #ministeeriumite arv üldine
   output$MinArv <- renderValueBox({
