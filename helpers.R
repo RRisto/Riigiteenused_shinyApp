@@ -71,7 +71,7 @@ KasutuskordadeSum=function(andmed, minist, allasutus, minJah) {
     andmed=andmed[andmed$allasutus==allasutus,]
   }
   valueBox(
-    paste(format(sum(andmed[andmed$naitaja=="osutamistearv",]$value, na.rm = T), big.mark=" ")), 
+    paste(format(sum(andmed[andmed$naitaja=="osutamiste arv",]$value, na.rm = T), big.mark=" ")), 
     "korda kasutati teenuseid",icon = icon("hand-o-left"),color = "purple")
 }
 
@@ -117,7 +117,7 @@ KliendiAjakuluSum=function(andmed, minist, allasutus, minJah) {
   }else {
     andmed=andmed[andmed$allasutus==allasutus,]
   }
-  osutamistearv=andmed[andmed$naitaja=="osutamistearv",]$value
+  osutamistearv=andmed[andmed$naitaja=="osutamiste arv",]$value
   ajakulu=andmed[andmed$naitaja=="ajakulu",]$value
   valueBox(
     paste(paste(format(round(sum(ajakulu*osutamistearv ,na.rm=T)), big.mark=" "))), 

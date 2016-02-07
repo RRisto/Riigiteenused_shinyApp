@@ -1,6 +1,20 @@
 library(shinydashboard)
 source("helpers.R")
-
+library(shinyjs)#vajalik laeb teksti kuvamiseks
+#CSSi klass, mis kuvab "laeb" teksti, kui andmeid laetase
+appCSS <- "
+#loading-content {
+  position: absolute;
+  background: #A9D0F5;
+  opacity: 0.9;
+  z-index: 100;
+  left: 0;
+  right: 0;
+  height: 100%;
+  text-align: center;
+  color: #FFFFFF;
+}
+"
 ####rakenduse interface
 dashboardPage(
   dashboardHeader(title = "Riigiteenused",  titleWidth = 200),
@@ -20,6 +34,14 @@ dashboardPage(
     )
   ),
   dashboardBody(
+    ##see osa vajalik "laeb" teate kuvamiseks andmete sisselaadimisel  
+    useShinyjs(),
+    inlineCSS(appCSS),
+    # Loading message
+    div(
+      id = "loading-content",
+      h2("Laen ja töötlen andmeid, palun oota ...")
+    ),
     tabItems(
       ###üldine body
       tabItem(tabName = "uldine",
@@ -80,8 +102,8 @@ HTML(paste("Kuna tegemist on pilootprojektiga ning mõõtmismetoodika
            on kujunemisjärgus, on andmetest ", 
 strong("järelduste tegemine omal vastutusel!"),
  "Rakenduse kood on", a("siin.",target="_blank",
-                      href="https://github.com/RRisto/Riigiteenused_shinyApp")#,
-#"Andmed on seisuga", paste0(Sys.time(),".")
-))
+                      href="https://github.com/RRisto/Riigiteenused_shinyApp"),
+p(""),
+ textOutput( "time"))))
 )))
-  ))))
+  )))

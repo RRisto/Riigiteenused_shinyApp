@@ -10,8 +10,24 @@ library(curl) #shiny server nõuab seda
 andmedLai=riigiteenused::andmedSisse("https://www.riigiteenused.ee/api/et/all")
 andmed=andmedPikaks(andmedLai)
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
+andmed$kanal=gsub("Kliendijuures", "Kliendi juures", andmed$kanal)
+andmed$kanal=gsub("Eiseteenindus", "E-iseteenindus", andmed$kanal)
+andmed$kanal=gsub("Epost", "E-post", andmed$kanal)
+andmed$naitaja=gsub("osutamistearv", "osutamiste arv", andmed$naitaja)
+#kuupäeva ja kellaaja kuvamiseks
+values <- reactiveValues()
 
-server <- function(input, output) {
+server <- function(input, output, session) {
+  #kustutab "laeb" teksti, kui andmed on sisse loetud
+  hide(id = "loading-content", anim = TRUE, animType = "fade")
+  
+  #kuupäeva ja kellaaja kuvamiseks
+  isolate(values$time <- Sys.time())
+    output$time <- renderText({
+      paste("Andmed on seisuga", as.character(values$time+7200), "EET") 
+      #liidan, et selleks et shiny server kuvaks Eesti aja järgi
+  })
+  
   #######KUSTUTAMISEKS vaja ainult andmete rakendusest alla laadimiseks
 #     output$downloadData <- downloadHandler(
 #       filename = "andmed.csv",
@@ -26,12 +42,19 @@ server <- function(input, output) {
 #       }
 #     )
   #############
+    
   ########üldise vaate asjad
   #ministeeriumite arv üldine
   output$MinArv <- renderValueBox({
-    valueBox(
-      paste(paste(length(unique(andmed$ministeerium)))), 
-      "ministeeriumi",icon = icon("institution"),color = "purple")
+    ########kui joonistab graafikuid, siis kuvab selle teate
+    progress <- shiny::Progress$new(session, min=0, max=1)
+        on.exit(progress$close())
+        progress$set(message = 'Joonistan graafikuid',
+                     detail = 'Palun oota ...')
+        #################################
+        valueBox(
+          paste(paste(length(unique(andmed$ministeerium)))), 
+          "ministeeriumi",icon = icon("institution"),color = "purple")
   })
   #allasutuste arv üldine
   output$AsutusteArv <- renderValueBox({
@@ -75,6 +98,14 @@ server <- function(input, output) {
   })
   #ministeeriumi teenuste arv
   output$MinTeenusteArv <- renderValueBox({
+    ########kui joonistab graafikuid, siis kuvab selle teate
+    progress <- shiny::Progress$new(session, min=0, max=1)
+    on.exit(progress$close())
+    
+    progress$set(message = 'Joonistan graafikuid',
+                 detail = 'Palun oota ...')
+    #################################
+    
     TeenusteSum(andmed=andmed, minist=input$ministeerium, minJah=1)
   })
   #asutuste arv ministeeriumi haldusalas
@@ -121,9 +152,16 @@ server <- function(input, output) {
   })
   #allasutuse teenuste arv
   output$AsutTeenusteArv <- renderValueBox({
+    #plot teenuseid kanalis 
+    #     ########kui joonistab graafikuid, siis kuvab selle teate
+        progress <- shiny::Progress$new(session, min=0, max=1)
+        on.exit(progress$close())
+        
+        progress$set(message = 'Joonistan graafikuid',
+                     detail = 'Palun oota ...')
+            #################################
     TeenusteSum(andmed=andmed, allasutus =input$asutus, minJah=0)
   })
-  #plot teenuseid kanalis 
   output$TeenuseidKanalisAsut <- renderPlot({
     data <- summeerija2(andmed[andmed$allasutus==input$asutus&andmed$naitaja=="rahulolu",], c("kanal", "identifikaator", "naitaja"))
     visualiseerija2(data, aes(x=kanal, y=arv),"")
