@@ -12,7 +12,8 @@ summeerija=function(data, ...) { #... paned jutumärkidesse variabled mille jär
 }
 
 #ja eelneva funktsiooni andmete visualiseerimiseks (skaala %)
-visualiseerija=function(data, mapping, ylab) {
+visualiseerija=function(data, mapping, ylab, ymax) {
+  #teljepikkus=max(data$max_stat)#y-telje kõrgus
   #localenv <- environment()
   library(ggplot2)
   library(scales)
@@ -23,8 +24,10 @@ visualiseerija=function(data, mapping, ylab) {
     xlab("")+
     ylab(ylab)+
     coord_cartesian(ylim=c(0,1))+
-    scale_y_discrete(labels = percent)+
-    ggtitle("Järgmiste mõõdikuga teenuste osakaal:")
+    #coord_cartesian(ylim=c(0,teljepikkus), expand=F)+
+    geom_text(nudge_y=0.05)+
+    #scale_y_discrete(labels = percent)+
+    ggtitle("Mõõdikutega kanalite osakaal ja arv:")
 }
 
 

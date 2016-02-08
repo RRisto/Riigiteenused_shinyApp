@@ -5,7 +5,7 @@ library(rjson)
 library(riigiteenused)
 library(curl) #shiny server nõuab seda
 
-# andmed=readRDS("./andmed/2016-02-05_andmedPikk.rds")
+#andmed=readRDS("./andmed/2016-02-05_andmedPikk.rds")
 # andmed sisse, pikaks ja minni nimedest haldusala maha
 andmedLai=riigiteenused::andmedSisse("https://www.riigiteenused.ee/api/et/all")
 andmed=andmedPikaks(andmedLai)
@@ -72,9 +72,18 @@ server <- function(input, output, session) {
   })
   # plot moodikuid kanali kohta üldine
   output$Moodikuid <- renderPlot({
+    #     ########kui joonistab graafikuid, siis kuvab selle teate
+    progress <- shiny::Progress$new(session, min=0, max=1)
+    on.exit(progress$close())
+    
+    progress$set(message = 'Joonistan graafikuid',
+                 detail = 'Palun oota ...')
+    #################################
     data <- summeerija(andmed, c("naitaja"))
-    visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr), "")
-  })
+    visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr, label=stat_olemas_tk), "")
+    #visualiseerija(data, aes(x=naitaja, y=stat_olemas_tk), "")
+    
+    })
   #üldine kasutuskordade arv kokku
   output$Kasutuskordi <- renderValueBox({
     KasutuskordadeSum(andmed=andmed, minist=input$ministeerium, minJah=2)
@@ -98,15 +107,7 @@ server <- function(input, output, session) {
   })
   #ministeeriumi teenuste arv
   output$MinTeenusteArv <- renderValueBox({
-    ########kui joonistab graafikuid, siis kuvab selle teate
-    progress <- shiny::Progress$new(session, min=0, max=1)
-    on.exit(progress$close())
-    
-    progress$set(message = 'Joonistan graafikuid',
-                 detail = 'Palun oota ...')
-    #################################
-    
-    TeenusteSum(andmed=andmed, minist=input$ministeerium, minJah=1)
+      TeenusteSum(andmed=andmed, minist=input$ministeerium, minJah=1)
   })
   #asutuste arv ministeeriumi haldusalas
   output$MinAsutusteArv <- renderValueBox({
@@ -121,8 +122,17 @@ server <- function(input, output, session) {
   })
   # plot ministeeriumi moodikuid kanali kohta
   output$MoodikuidMin <- renderPlot({
+    #     ########kui joonistab graafikuid, siis kuvab selle teate
+    progress <- shiny::Progress$new(session, min=0, max=1)
+    on.exit(progress$close())
+    
+    progress$set(message = 'Joonistan graafikuid',
+                 detail = 'Palun oota ...')
+    #################################
     data <- summeerija(andmed[andmed$ministeerium==input$ministeerium,], c("naitaja"))
-    visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr), "")
+    #visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr), "")
+    visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr, label=stat_olemas_tk), "")
+    
   })
   #ministeeriumi kasutuskordade arv kokku
   output$MinKasutuskordi <- renderValueBox({
@@ -138,6 +148,13 @@ server <- function(input, output, session) {
   })
   #ministeeriumi teenuste ajakulu
   output$MinAjakulu <- renderValueBox({
+    ########kui joonistab graafikuid, siis kuvab selle teate
+    progress <- shiny::Progress$new(session, min=0, max=1)
+    on.exit(progress$close())
+    
+    progress$set(message = 'Joonistan graafikuid',
+                 detail = 'Palun oota ...')
+    #################################
     KliendiAjakuluSum(andmed=andmed, minist=input$ministeerium, minJah=1)
   })
   
@@ -153,13 +170,6 @@ server <- function(input, output, session) {
   #allasutuse teenuste arv
   output$AsutTeenusteArv <- renderValueBox({
     #plot teenuseid kanalis 
-    #     ########kui joonistab graafikuid, siis kuvab selle teate
-        progress <- shiny::Progress$new(session, min=0, max=1)
-        on.exit(progress$close())
-        
-        progress$set(message = 'Joonistan graafikuid',
-                     detail = 'Palun oota ...')
-            #################################
     TeenusteSum(andmed=andmed, allasutus =input$asutus, minJah=0)
   })
   output$TeenuseidKanalisAsut <- renderPlot({
@@ -169,7 +179,8 @@ server <- function(input, output, session) {
   # plot asutuse moodikuid kanali kohta
   output$MoodikuidAsut <- renderPlot({
     data <- summeerija(andmed[andmed$allasutus==input$asutus,], c("naitaja"))
-    visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr), "")
+    visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr, label=stat_olemas_tk), "")
+    #visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr), "")
   })
   #asutuse kasutuskordade arv kokku
   output$AsutKasutuskordi <- renderValueBox({
@@ -183,8 +194,15 @@ server <- function(input, output, session) {
   output$AsutMaksumus <- renderValueBox({
     HalduskuluSum(andmed=andmed, allasutus=input$asutus, minJah=0)
   })
-  #ministeeriumi teenuste ajakulu
+  #asutuse teenuste ajakulu
   output$AsutAjakulu <- renderValueBox({
+    #     ########kui joonistab graafikuid, siis kuvab selle teate
+    progress <- shiny::Progress$new(session, min=0, max=1)
+    on.exit(progress$close())
+    
+    progress$set(message = 'Joonistan graafikuid',
+                 detail = 'Palun oota ...')
+    #################################
     KliendiAjakuluSum(andmed=andmed, allasutus=input$asutus, minJah=0)
   })
 }
