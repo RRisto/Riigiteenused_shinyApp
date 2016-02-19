@@ -12,6 +12,7 @@ andmed=andmedPikaks(andmedLai)
 andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
 andmed$kanal=gsub("Kliendijuures", "Kliendi juures", andmed$kanal)
 andmed$kanal=gsub("Eiseteenindus", "E-iseteenindus", andmed$kanal)
+andmed$kanal=gsub("Eesti", "Eesti.ee", andmed$kanal)
 andmed$kanal=gsub("Epost", "E-post", andmed$kanal)
 andmed$naitaja=gsub("osutamistearv", "osutamiste arv", andmed$naitaja)
 #kuupäeva ja kellaaja kuvamiseks
