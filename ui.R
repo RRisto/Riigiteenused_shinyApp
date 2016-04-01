@@ -6,7 +6,7 @@ appCSS <- "
 #loading-content {
   position: absolute;
   background: #A9D0F5;
-  opacity: 0.9;
+  opacity: 0.8;
   z-index: 100;
   left: 0;
   right: 0;
@@ -20,18 +20,25 @@ dashboardPage(
   dashboardHeader(title = "Riigiteenused",  titleWidth = 200),
   dashboardSidebar(
     width = 200,
+    #see on customiseeritud cssi jaoks
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+    ),
     ####külgmenüü
-    sidebarMenu(
-      menuItem("Üldine", icon = icon("institution"),tabName = "uldine"),
-      menuItem("Ministeeriumite lõikes", icon = icon("building"),
-               tabName = "minloikes"),
-      menuItem("Asutuste lõikes", icon = icon("home"),tabName = "asutloikes"),
-      menuItem("Info", icon = icon("info"),tabName = "info")
+    #sidebarMenu(
+      h4(htmlOutput("valiVaade")),
+      sidebarMenuOutput("kylgmenuu"),
+      #keelevalik
+      p(""),
+      radioButtons(inputId = "keel", label = NULL,
+                   choices = c("Eesti keeles" = "et", "In English" = "en"),
+                   selected = "et")
+
       #####KUSTUTAMISEKS vaja ainult andmete rakendusest alla laadimiseks
 #             downloadButton('downloadData', 'Download'),
 #              downloadButton('downloadData2', 'Download')
       #################
-    )
+    #)
   ),
   dashboardBody(
     ##see osa vajalik "laeb" teate kuvamiseks andmete sisselaadimisel  
@@ -40,7 +47,8 @@ dashboardPage(
     # Loading message
     div(
       id = "loading-content",
-      h2("Laen ja töötlen andmeid, palun oota ...")
+      h2("Laen ja töötlen andmeid, palun oota ..."),
+      h2("Loading and cleaning data, please wait ...")
     ),
     tabItems(
       ###üldine body
@@ -60,9 +68,10 @@ dashboardPage(
       ),
       ####ministeeriumite lõikes body
       tabItem(tabName = "minloikes",
-              fluidRow(box(width=4,title = "Haldusala",solidHeader = TRUE,
+              fluidRow(box(width=4,title=textOutput("haldusalavalik2"),
+                           solidHeader = TRUE,
                            background = "light-blue", collapsible = F,
-                           "Vali haldusala",
+                           textOutput("haldusalavalikinfo2"),
                            uiOutput("ministeerium"), height=150),
                        width=4, valueBoxOutput("MinTeenusteArv"),
                        width=4, valueBoxOutput("MinAsutusteArv")
@@ -79,11 +88,17 @@ dashboardPage(
       ),
       ####asutuste lõikes body
       tabItem(tabName = "asutloikes",
-              fluidRow(box(width=4,title = "Allasutus",background = "light-blue",
-                           solidHeader = TRUE,  "Vali haldusala",
+              fluidRow(box(width=4,
+                           title=textOutput("haldusalavalik"),
+                           background = "light-blue",
+                           solidHeader = TRUE,  
+                           textOutput("haldusalavalikinfo"),
                            uiOutput("ministeerium2"),
-                           "Vali allasutus", uiOutput("allasutus"), height=250),
-                       box(width=8, plotOutput("TeenuseidKanalisAsut", height = 250)),
+                           textOutput("asutusevalik"), 
+                           uiOutput("allasutus"), 
+                           height=250),
+                       box(width=8, plotOutput("TeenuseidKanalisAsut", 
+                                               height = 250)),
                        box(width=4, plotOutput("MoodikuidAsut", height = 250)),
                        width=4, valueBoxOutput("AsutTeenusteArv"),
                        valueBoxOutput("AsutKasutuskordi"),
@@ -92,18 +107,20 @@ dashboardPage(
                        valueBoxOutput("AsutAjakulu")
               )
       ),
+      
+      #############info tab
       tabItem(tabName = "info",
             fluidRow(box(width=12,
-                         tags$h4("Tegemist on riigiteenuste andmete 
-visualiseeringuga. Projekti kohta loe", 
-                                 a("siit.",target="_blank",
-                                   href="https://github.com/MKM-ITAO/riigiteenused"),
-HTML(paste("Kuna tegemist on pilootprojektiga ning mõõtmismetoodika 
-           on kujunemisjärgus, on andmetest ", 
-strong("järelduste tegemine omal vastutusel!"),
- "Rakenduse kood on", a("siin.",target="_blank",
-                      href="https://github.com/RRisto/Riigiteenused_shinyApp"),
+                         HTML(paste(textOutput("info1"),
+           a("https://github.com/MKM-ITAO/riigiteenused",
+             target="_blank",
+             href="https://github.com/MKM-ITAO/riigiteenused"),
+           strong(textOutput("info2")), 
+           textOutput("info3"), 
+           a("https://github.com/RRisto/Riigiteenused_shinyApp",
+             target="_blank",
+             href="https://github.com/RRisto/Riigiteenused_shinyApp"),
 p(""),
- textOutput( "time"))))
+ textOutput( "time")))
 )))
-  )))
+)))

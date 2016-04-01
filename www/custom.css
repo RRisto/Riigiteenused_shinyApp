@@ -1,0 +1,20 @@
+h4 {
+	color: #B1BEC0;
+	position: relative;
+	left: 20px;
+}
+label {
+	color: #B1BEC0;
+	position:relative;
+	left: 5px; 
+}
+sidebar {
+	background-color: green;
+}
+/* sidebari värv osaliselt 
+ul.sidebar-menu {
+	background-color: #f4b943;
+}
+/*
+
+
