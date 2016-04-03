@@ -4,15 +4,15 @@ library(shinyjs)#vajalik laeb teksti kuvamiseks
 #CSSi klass, mis kuvab "laeb" teksti, kui andmeid laetase
 appCSS <- "
 #loading-content {
-  position: absolute;
-  background: #A9D0F5;
-  opacity: 0.8;
-  z-index: 100;
-  left: 0;
-  right: 0;
-  height: 100%;
-  text-align: center;
-  color: #FFFFFF;
+position: absolute;
+background: #A9D0F5;
+opacity: 0.8;
+z-index: 100;
+left: 0;
+right: 0;
+height: 100%;
+text-align: center;
+color: #FFFFFF;
 }
 "
 ####rakenduse interface
@@ -26,19 +26,19 @@ dashboardPage(
     ),
     ####külgmenüü
     #sidebarMenu(
-      h4(htmlOutput("valiVaade")),
-      sidebarMenuOutput("kylgmenuu"),
-      #keelevalik
-      p(""),
-      radioButtons(inputId = "keel", label = NULL,
-                   choices = c("Eesti keeles" = "et", "In English" = "en"),
-                   selected = "et")
-
-      #####KUSTUTAMISEKS vaja ainult andmete rakendusest alla laadimiseks
-#             downloadButton('downloadData', 'Download'),
-#              downloadButton('downloadData2', 'Download')
-      #################
-    #)
+    h4(htmlOutput("valiVaade")),
+    sidebarMenuOutput("kylgmenuu"),
+    #keelevalik
+    p(""),
+    radioButtons(inputId = "keel", label = NULL,
+                 choices = c("Eesti keeles" = "et", "In English" = "en"),
+                 selected = "et")
+    
+    #####KUSTUTAMISEKS vaja ainult andmete rakendusest alla laadimiseks
+#                 downloadButton('downloadData', 'Download'),
+#                  downloadButton('downloadData2', 'Download')
+    ################
+    
   ),
   dashboardBody(
     ##see osa vajalik "laeb" teate kuvamiseks andmete sisselaadimisel  
@@ -110,17 +110,17 @@ dashboardPage(
       
       #############info tab
       tabItem(tabName = "info",
-            fluidRow(box(width=12,
-                         HTML(paste(textOutput("info1"),
-           a("https://github.com/MKM-ITAO/riigiteenused",
-             target="_blank",
-             href="https://github.com/MKM-ITAO/riigiteenused"),
-           strong(textOutput("info2")), 
-           textOutput("info3"), 
-           a("https://github.com/RRisto/Riigiteenused_shinyApp",
-             target="_blank",
-             href="https://github.com/RRisto/Riigiteenused_shinyApp"),
-p(""),
- textOutput( "time")))
-)))
-)))
+              fluidRow(box(width=12,
+                           HTML(paste(textOutput("info1"),
+                                      a("https://github.com/MKM-ITAO/riigiteenused",
+                                        target="_blank",
+                                        href="https://github.com/MKM-ITAO/riigiteenused"),
+                                      strong(textOutput("info2")), 
+                                      textOutput("info3"), 
+                                      a("https://github.com/RRisto/Riigiteenused_shinyApp",
+                                        target="_blank",
+                                        href="https://github.com/RRisto/Riigiteenused_shinyApp"),
+                                      p(""),
+                                      textOutput( "time")))
+              )))
+    )))

@@ -3,28 +3,30 @@ source("helpers.R")
 library(ggplot2)
 library(rjson)
 library(riigiteenused)
-library(curl) #shiny server nõuab seda
+library(curl)
+library(data.table)
 
-#andmed=readRDS("./andmed/2016-03-31_andmedPikk.rds") #abiandmed arendamiseks
-# andmed sisse, pikaks ja minni nimedest haldusala maha
+#andmete sisselaadimine
 andmedLai=riigiteenused::andmedSisse("https://www.riigiteenused.ee/api/et/all")
-andmed=andmedPikaks(andmedLai)
-andmed$ministeerium=gsub("i haldusala", "", andmed$ministeerium)
-andmed$ministeerium=gsub("Riigikantsele", "Riigikantselei", andmed$ministeerium)
-andmed$kanal=gsub("Kliendijuures", "Kliendi juures", andmed$kanal)
-andmed$kanal=gsub("Eiseteenindus", "E-iseteenindus", andmed$kanal)
-andmed$kanal=gsub("Eesti", "Eesti.ee", andmed$kanal)
-andmed$kanal=gsub("Epost", "E-post", andmed$kanal)
-andmed$naitaja=gsub("osutamistearv", "osutamiste arv", andmed$naitaja)
-#loen sisse tõlkefailid
-kanali_tolked=read.csv("./translations/dictionary_channels.csv", sep=";", stringsAsFactors = F)
-naitaja_tolked=read.csv("./translations/dictionary_moodik.csv", sep=";",stringsAsFactors = F)
-ministeerium_tolked=read.csv("./translations/dictionary_ministeeriumid.csv", sep=";", stringsAsFactors = F)
-asutused_tolked=read.csv("./translations/dictionary_asutused.csv", sep=";", stringsAsFactors = F)
-translation=read.csv("./translations/dictionary_ui.csv", sep=";")#tõlked interface raami jaoks
+andmed=andmedPikaksDT(andmedLai)
+andmed[, ministeerium:=gsub("i haldusala", "", andmed[,ministeerium])]
+andmed[, ministeerium:=gsub("Riigikantsele", "Riigikantselei", andmed[,ministeerium])]
+andmed[, kanal:=gsub("Kliendijuures", "Kliendi juures", andmed[,kanal])]
+andmed[, kanal:=gsub("Eiseteenindus", "E-iseteenindus", andmed[,kanal])]
+andmed[, kanal:=gsub("Eesti", "Eesti.ee", andmed[,kanal])]
+andmed[, kanal:=gsub("Epost", "E-post", andmed[,kanal])]
+andmed[, kanal:=gsub("Letiteenus", "Teeninduslett", andmed[,kanal])]
+andmed[, naitaja:=gsub("osutamistearv", "osutamiste arv", andmed[,naitaja])]
 
-#keevitan kanalite, moodikute tõlked juurde, kui siin andmete ridade
-#arv väheneb, on kuskil keys erinevus vrlds andmetega
+#loen sisse tõlkefailid (fread aitab encodingu probleeme ennetada)
+kanali_tolked=fread("./translations/dictionary_channels.csv", encoding = "UTF-8")
+naitaja_tolked=fread("./translations/dictionary_moodik.csv", encoding = "UTF-8")
+ministeerium_tolked=fread("./translations/dictionary_ministeeriumid.csv", encoding = "UTF-8")
+asutused_tolked=fread("./translations/dictionary_asutused.csv", encoding = "UTF-8")
+translation=read.csv("./translations/dictionary_ui.csv", sep=";",stringsAsFactors = F)#tõlked interface raami jaoks
+
+#keevitan kanalite, moodikute tõlked juurde, kui siin "andmed" ridade
+#arv väheneb, on kuskil keys bugi sees
 andmed=merge(andmed, kanali_tolked, by.x="kanal", by.y="key")
 andmed=merge(andmed, naitaja_tolked, by.x="naitaja", by.y="key")
 andmed=merge(andmed, ministeerium_tolked, by.x="ministeerium", by.y="key")
@@ -39,58 +41,58 @@ server <- function(input, output, session) {
   
   #kuupäeva ja kellaaja kuvamiseks
   isolate(values$time <- Sys.time())
-    output$time <- renderText({
-      paste(tr("Andmed on seisuga"), as.character(values$time+7200), "EET") 
-      #liidan, et selleks et shiny server kuvaks Eesti aja järgi
+  output$time <- renderText({
+    paste(tr("Andmed on seisuga"), as.character(values$time+7200), "EET") 
+    #liidan, et selleks et shiny server kuvaks Eesti aja järgi
   })
   
-  #######KUSTUTAMISEKS vaja ainult andmete rakendusest alla laadimiseks
-#     output$downloadData <- downloadHandler(
-#       filename = "andmed.csv",
-#       content = function(file) {
-#         write.table(andmed, file, sep=";")
-#       }
-#     )
-#     output$downloadData2 <- downloadHandler(
-#       filename = "andmedLai.csv",
-#       content = function(file) {
-#         write.table(andmedLai[, 1:9], file, sep=";")
-#       }
-#     )
+  #######KUSTUTAMISEKS vaja andmete rakendusest alla laadimiseks arendamisel
+#       output$downloadData <- downloadHandler(
+#         filename = "andmed.csv",
+#         content = function(file) {
+#           write.table(andmed, file, sep=";")
+#         }
+#       )
+#       output$downloadData2 <- downloadHandler(
+#         filename = "andmedLai.csv",
+#         content = function(file) {
+#           write.table(andmedLai[, 1:9], file, sep=";")
+#         }
+#       )
   #############
-    #funktsioon interface'i tõlkimiseks
-        tr <- function(text){ # translates text into current language
-          translation[translation$key==text,input$keel]
-        }
-    #funktsioon ooteteksti kuvamiseks
-    ooteTekst=function() {
-      progress <- shiny::Progress$new(session, min=0, max=0)
+  #funktsioon interface'i tõlkimiseks
+  tr <- function(text){ # translates text into current language
+    translation[translation$key==text,input$keel]
+  }
+  #funktsioon ooteteksti kuvamiseks
+  ooteTekst=function() {
+    progress <- shiny::Progress$new(session, min=0, max=0)
     on.exit(progress$close())
     progress$set(message = 'Palun oota / Please wait ...')
-    }
-
-    ######sidebarmenu
-    #tekst tabi valimiseks
-    output$valiVaade=renderText({
-      #as.character(tr("Vali vaade"))
-      HTML(paste("<b>",as.character(tr("Vali vaade")),"</b>"))
-    })
-    output$kylgmenuu <- renderMenu({
-      sidebarMenu(
-        menuItem(tr("uldine"), icon = icon("institution"),tabName = "uldine"),
-        menuItem(tr("minloikes"), icon = icon("building"),
-                 tabName = "minloikes"),
+  }
+  
+  ######sidebarmenu
+  #tekst tabi valimiseks
+  output$valiVaade=renderText({
+    #as.character(tr("Vali vaade"))
+    HTML(paste("<b>",as.character(tr("Vali vaade")),"</b>"))
+  })
+  output$kylgmenuu <- renderMenu({
+    sidebarMenu(
+      menuItem(tr("uldine"), icon = icon("institution"),tabName = "uldine"),
+      menuItem(tr("minloikes"), icon = icon("building"),
+               tabName = "minloikes"),
       menuItem(tr("asutloikes"), icon = icon("home"),tabName = "asutloikes"),
       menuItem("Info", icon = icon("info"),tabName = "info")
-      )
-    })
- 
+    )
+  })
+  
   ########üldise vaate asjad
   #ministeeriumite arv üldine
   output$MinArv <- renderValueBox({
-        valueBox(
-          paste(paste(length(unique(andmed$ministeerium)))), 
-          tr("ministeeriumi"),icon = icon("institution"),color = "purple")
+    valueBox(
+      paste(paste(length(unique(andmed$ministeerium)))), 
+      tr("ministeeriumi"),icon = icon("institution"),color = "purple")
   })
   #allasutuste arv üldine
   output$AsutusteArv <- renderValueBox({
@@ -103,39 +105,34 @@ server <- function(input, output, session) {
                 keel=input$keel)
   })
   # plot teenuseid kanalis üldine
-    output$TeenuseidKanalis <- renderPlot({
-      if (input$keel=="et") {
-        data <- summeerija2(andmed[andmed$naitaja=="rahulolu",], 
-                            c("kanal", "identifikaator", "naitaja"))
-        visualiseerija2(data, aes(x=kanal, y=arv),
-                  title=as.character(tr("Teenuste arv kanalite lõikes")),"")
-      } else {
-        data <- summeerija2(andmed[andmed$naitaja=="rahulolu",], 
-                            c("kanal_en", "identifikaator", "naitaja"))
-        visualiseerija2(data, aes(x=kanal_en, y=arv),
-                title=as.character(tr("Teenuste arv kanalite lõikes")),"")
-        }
-    })
+  output$TeenuseidKanalis <- renderPlot({
+    if (input$keel=="et") {
+      data <- summeerija2(andmed[andmed$naitaja=="rahulolu",], 
+                          c("kanal", "identifikaator", "naitaja"))
+      visualiseerija2(data, aes(x=kanal, y=arv),
+                      title=as.character(tr("Teenuste arv kanalite lõikes")),"")
+    } else {
+      data <- summeerija2(andmed[andmed$naitaja=="rahulolu",], 
+                          c("kanal_en", "identifikaator", "naitaja"))
+      visualiseerija2(data, aes(x=kanal_en, y=arv),
+                      title=as.character(tr("Teenuste arv kanalite lõikes")),"")
+    }
+  })
   # plot moodikuid kanali kohta üldine
   output$Moodikuid <- renderPlot({
-         ########kui joonistab graafikuid, siis kuvab selle teate
-#     progress <- shiny::Progress$new(session, min=0, max=0)
-#     on.exit(progress$close())
-#     
-#     progress$set(message = 'Palun oota / Please wait ...')#,
-#                 # detail = 'Palun oota ...')
+    ########kui joonistab graafikuid, siis kuvab teate
     ooteTekst()
     #################################
     if (input$keel=="et") {
-    data <- summeerija(andmed, c("naitaja"))
-    visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr, label=stat_olemas_tk),
-                  title=as.character(tr("Mõõdikutega kanalite osakaal ja arv:")), "")
+      data <- summeerija(andmed, c("naitaja"))
+      visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr, label=stat_olemas_tk),
+                     title=as.character(tr("Mõõdikutega kanalite osakaal ja arv:")), "")
     } else {
       data <- summeerija(andmed, c("naitaja_en"))
       visualiseerija(data, aes(x=naitaja_en, y=stat_olemas_pr, label=stat_olemas_tk),
                      title=as.character(tr("Mõõdikutega kanalite osakaal ja arv:")), "")
     }
-    })
+  })
   #üldine kasutuskordade arv kokku
   output$Kasutuskordi <- renderValueBox({
     KasutuskordadeSum(andmed=andmed, minist=input$ministeerium, minJah=2,
@@ -168,8 +165,8 @@ server <- function(input, output, session) {
   })
   #ministeeriumi teenuste arv
   output$MinTeenusteArv <- renderValueBox({
-      TeenusteSum(andmed=andmed, minist=input$ministeerium, minJah=1,
-                  text=tr("kaardistatud teenust"), keel=input$keel)
+    TeenusteSum(andmed=andmed, minist=input$ministeerium, minJah=1,
+                text=tr("kaardistatud teenust"), keel=input$keel)
   })
   #asutuste arv ministeeriumi haldusalas
   output$MinAsutusteArv <- renderValueBox({
@@ -197,7 +194,7 @@ server <- function(input, output, session) {
   })
   # plot ministeeriumi moodikuid kanali kohta
   output$MoodikuidMin <- renderPlot({
-    #     ########kui joonistab graafikuid, siis kuvab selle teate
+    #     ########kui joonistab graafikuid, siis kuvab teate
     ooteTekst()
     #################################
     if (input$keel=="et") {
@@ -212,23 +209,23 @@ server <- function(input, output, session) {
   })
   #ministeeriumi kasutuskordade arv kokku
   output$MinKasutuskordi <- renderValueBox({
-      KasutuskordadeSum(andmed=andmed, minist=input$ministeerium, minJah=1,
-                        text=tr("korda kasutati teenuseid"), keel=input$keel)
+    KasutuskordadeSum(andmed=andmed, minist=input$ministeerium, minJah=1,
+                      text=tr("korda kasutati teenuseid"), keel=input$keel)
   })
   #minsteeriumi keskmine rahulolu
   output$MinRahulolu <- renderValueBox({
-      KeskmineRahulolu(andmed=andmed, minist=input$ministeerium, minJah=1,
-                       text=tr("keskmine rahulolu"), keel=input$keel)
+    KeskmineRahulolu(andmed=andmed, minist=input$ministeerium, minJah=1,
+                     text=tr("keskmine rahulolu"), keel=input$keel)
   })
   #ministeeriumi teenuste maksumus
   output$MinMaksumus <- renderValueBox({
-      HalduskuluSum(andmed=andmed, minist=input$ministeerium, minJah=1,
-                    text=tr("teenuste kulu riigile"), keel=input$keel)
+    HalduskuluSum(andmed=andmed, minist=input$ministeerium, minJah=1,
+                  text=tr("teenuste kulu riigile"), keel=input$keel)
   })
   #ministeeriumi teenuste ajakulu
   output$MinAjakulu <- renderValueBox({
-      KliendiAjakuluSum(andmed=andmed, minist=input$ministeerium, minJah=1,
-                        text=tr("tundi kulutasid kliendid"), keel=input$keel)
+    KliendiAjakuluSum(andmed=andmed, minist=input$ministeerium, minJah=1,
+                      text=tr("tundi kulutasid kliendid"), keel=input$keel)
   })
   
   ############################allasutuste asjad
@@ -239,7 +236,7 @@ server <- function(input, output, session) {
     } else if (input$keel=="en") {
       selectInput("ministeerium2", "", as.character(unique(andmed$ministeerium_en)))
     }
-    })
+  })
   ##interaktiivselt kuvab asutuste nimekirja, mis valitud minni all on
   output$allasutus <- renderUI({
     if (input$keel=="et") {
@@ -251,8 +248,8 @@ server <- function(input, output, session) {
   #allasutuse teenuste arv
   output$AsutTeenusteArv <- renderValueBox({
     #plot teenuseid kanalis 
-      TeenusteSum(andmed=andmed, allasutus =input$asutus, minJah=0,
-                  text=tr("kaardistatud teenust"), keel=input$keel)
+    TeenusteSum(andmed=andmed, allasutus =input$asutus, minJah=0,
+                text=tr("kaardistatud teenust"), keel=input$keel)
   })
   #plot teenuseid kanalite lõikes
   output$TeenuseidKanalisAsut <- renderPlot({
@@ -280,13 +277,13 @@ server <- function(input, output, session) {
   })
   #asutuse kasutuskordade arv kokku
   output$AsutKasutuskordi <- renderValueBox({
-      KasutuskordadeSum(andmed=andmed, allasutus=input$asutus, minJah=0,
-                        text=tr("korda kasutati teenuseid"), keel=input$keel)
+    KasutuskordadeSum(andmed=andmed, allasutus=input$asutus, minJah=0,
+                      text=tr("korda kasutati teenuseid"), keel=input$keel)
   })
   #asutuse keskmine rahulolu
   output$AsutRahulolu <- renderValueBox({
-      KeskmineRahulolu(andmed=andmed, allasutus=input$asutus, minJah=0,
-                       text=tr("keskmine rahulolu"), keel=input$keel)
+    KeskmineRahulolu(andmed=andmed, allasutus=input$asutus, minJah=0,
+                     text=tr("keskmine rahulolu"), keel=input$keel)
   })
   #asutuse teenuste maksumus
   output$AsutMaksumus <- renderValueBox({
@@ -295,7 +292,7 @@ server <- function(input, output, session) {
   })
   #asutuse teenuste ajakulu
   output$AsutAjakulu <- renderValueBox({
-    #     ########kui joonistab graafikuid, siis kuvab selle teate
+    #     ########kui joonistab graafikuid, siis kuvab teate
     ooteTekst()
     #################################
     KliendiAjakuluSum(andmed=andmed, allasutus=input$asutus, minJah=0,

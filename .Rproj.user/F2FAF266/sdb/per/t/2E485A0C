@@ -1,0 +1,17 @@
+{
+    "contents" : "########Abiskript tõlkefailide õiesse kodeeringusse viimiseks\n#csv-st teeme rds, kuna muidu serverisse laadimisel tekib koadega jama\nkanali_tolked=read.csv(\"./translations/algfailid/dictionary_channels.csv\", sep=\";\", stringsAsFactors = F)\nnaitaja_tolked=read.csv(\"./translations/algfailid/dictionary_moodik.csv\", sep=\";\", stringsAsFactors = F)\nministeerium_tolked=read.csv(\"./translations/algfailid/dictionary_ministeeriumid.csv\", sep=\";\", stringsAsFactors = F)\nasutused_tolked=read.csv(\"./translations/algfailid/dictionary_asutused.csv\", sep=\";\", stringsAsFactors = F)\ntranslation=read.csv(\"./translations/algfailid/dictionary_ui.csv\", sep=\";\")#tõlked interface raami jaoks\n\n#csv\nwrite.table(translation,\"./translations/dictionary_ui.csv\", sep=\";\",row.names = F, fileEncoding =\"utf-8\")\nwrite.table(asutused_tolked,\"./translations/dictionary_asutused.csv\", sep=\";\",row.names = F, fileEncoding =\"utf-8\")\nwrite.table(ministeerium_tolked,\"./translations/dictionary_ministeeriumid.csv\", sep=\";\",row.names = F, fileEncoding =\"utf-8\")\nwrite.table(naitaja_tolked,\"./translations/dictionary_moodik.csv\", sep=\";\",row.names = F, fileEncoding =\"utf-8\")\nwrite.table(kanali_tolked,\"./translations/dictionary_channels.csv\", sep=\";\",row.names = F, fileEncoding =\"utf-8\")\n\n#rds\nsaveRDS(kanali_tolked, \"./translations/dictionary_channels.RDS\")\nsaveRDS(naitaja_tolked, \"./translations/dictionary_moodik.RDS\")\nsaveRDS(ministeerium_tolked, \"./translations/dictionary_ministeeriumid.RDS\")\nsaveRDS(asutused_tolked, \"./translations/dictionary_asutused.RDS\")\nsaveRDS(translation, \"./translations/dictionary_ui.RDS\")\n\n############abiskript leidmaks tõlgetes mismache tegelikest andmetest\n#kanalid\nkanalOlemas=c()\nfor (i in 1:nrow(andmed)) {\n  if(andmed$kanal[i]%in%kanali_tolked$key) {\n    kanalOlemas[i]=FALSE\n  } else {\n    kanalOlemas[i]=TRUE\n  }\n}\n#väärtused, mis tõlke failis ei klapi\nunique(andmed$kanal[kanalOlemas])",
+    "created" : 1459710969926.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2988297754",
+    "id" : "2E485A0C",
+    "lastKnownWriteTime" : 1459579781,
+    "path" : "~/R/Riigiteenused_shinyApp/abiskript.R",
+    "project_path" : "abiskript.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
