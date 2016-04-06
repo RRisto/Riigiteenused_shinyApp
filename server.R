@@ -248,7 +248,7 @@ server <- function(input, output, session) {
   #allasutuse teenuste arv
   output$AsutTeenusteArv <- renderValueBox({
     #plot teenuseid kanalis 
-    TeenusteSum(andmed=andmed, allasutus =input$asutus, minJah=0,
+    TeenusteSum(andmed=andmed, allasutusnimi =input$asutus, minJah=0,
                 text=tr("kaardistatud teenust"), keel=input$keel)
   })
   #plot teenuseid kanalite lõikes
@@ -277,17 +277,17 @@ server <- function(input, output, session) {
   })
   #asutuse kasutuskordade arv kokku
   output$AsutKasutuskordi <- renderValueBox({
-    KasutuskordadeSum(andmed=andmed, allasutus=input$asutus, minJah=0,
+    KasutuskordadeSum(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
                       text=tr("korda kasutati teenuseid"), keel=input$keel)
   })
   #asutuse keskmine rahulolu
   output$AsutRahulolu <- renderValueBox({
-    KeskmineRahulolu(andmed=andmed, allasutus=input$asutus, minJah=0,
+    KeskmineRahulolu(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
                      text=tr("keskmine rahulolu"), keel=input$keel)
   })
   #asutuse teenuste maksumus
   output$AsutMaksumus <- renderValueBox({
-    HalduskuluSum(andmed=andmed, allasutus=input$asutus, minJah=0,
+    HalduskuluSum(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
                   text=tr("teenuste kulu riigile"), keel=input$keel)
   })
   #asutuse teenuste ajakulu
@@ -295,7 +295,7 @@ server <- function(input, output, session) {
     #     ########kui joonistab graafikuid, siis kuvab teate
     ooteTekst()
     #################################
-    KliendiAjakuluSum(andmed=andmed, allasutus=input$asutus, minJah=0,
+    KliendiAjakuluSum(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
                       text=tr("tundi kulutasid kliendid"), keel=input$keel)
   })
   ###########info tabi tõlked

@@ -141,14 +141,15 @@ visualiseerija2=function(data, mapping, ylab, title) {
     ggtitle(enc2native(title))
 }
 #teenuste arv minni/asutuse haldusalas, teeb valueboxi interface
-TeenusteSum=function(andmed, minist, allasutus, minJah, text, keel) {
+TeenusteSum=function(andmed, minist, allasutusnimi, minJah, text, keel) {
   if (keel=="et") {
     if (minJah==1) { #kui muu, siis on allasutus
       andmed=andmed[andmed$ministeerium==minist,]
     } else if (minJah==2) {
       andmed=andmed
     } else    {
-      andmed=andmed[andmed$allasutus==allasutus,]
+     # andmed=andmed[andmed$allasutus==allasutus,]
+      andmed=andmed[allasutus==allasutusnimi]
     }
     valueBox(
       paste(length(unique(andmed$identifikaator))), 
@@ -159,7 +160,8 @@ TeenusteSum=function(andmed, minist, allasutus, minJah, text, keel) {
     } else if (minJah==2) {
       andmed=andmed
     } else    {
-      andmed=andmed[andmed$allasutus_en==allasutus,]
+      #andmed=andmed[andmed$allasutus_en==allasutus,]
+      andmed=andmed[allasutus_en==allasutusnimi]
     }
     valueBox(
       paste(length(unique(andmed$identifikaator))), 
@@ -168,25 +170,27 @@ TeenusteSum=function(andmed, minist, allasutus, minJah, text, keel) {
 }
 
 #kasutuskordade summa arvutamiseks, teeb vale boxi interface
-KasutuskordadeSum=function(andmed, minist, allasutus, minJah, text, keel="et") {
+KasutuskordadeSum=function(andmed, minist, allasutusnimi, minJah, text, keel) {
   if (keel=="et") {
     if (minJah==1) { #kui muu, siis on allasutus
       andmed=andmed[andmed$ministeerium==minist,]
     } else if (minJah==2) {
       andmed=andmed
-    }else {
-      andmed=andmed[andmed$allasutus==allasutus,]
+    }else if (minJah==0) {
+      #andmed=andmed[andmed$allasutus==allasutus,]
+      andmed=andmed[allasutus==allasutusnimi]
     }
     valueBox(
       paste(format(sum(andmed[andmed$naitaja=="osutamiste arv",]$value, na.rm = T), big.mark=" ")), 
       text,icon = icon("hand-o-left"),color = "purple")
-  } else {
+  } else if (keel=="en") {
     if (minJah==1) { #kui muu, siis on allasutus
       andmed=andmed[andmed$ministeerium_en==minist,]
     } else if (minJah==2) {
       andmed=andmed
     }else {
-      andmed=andmed[andmed$allasutus_en==allasutus,]
+      #andmed=andmed[andmed$allasutus_en==allasutus,]
+      andmed=andmed[allasutus_en==allasutusnimi]
     }
     valueBox(
       paste(format(sum(andmed[andmed$naitaja=="osutamiste arv",]$value, na.rm = T), big.mark=" ")), 
@@ -195,14 +199,15 @@ KasutuskordadeSum=function(andmed, minist, allasutus, minJah, text, keel="et") {
 }
 
 #keskmise rahulolu arvutamiseks, teeb value boxi kohe interfaces
-KeskmineRahulolu=function(andmed, minist, allasutus, minJah, text, keel) {
+KeskmineRahulolu=function(andmed, minist, allasutusnimi, minJah, text, keel) {
   if (keel=="et") {
     if (minJah==1) { #kui muu, siis on allasutus
       andmed=andmed[andmed$ministeerium==minist,]
     } else if (minJah==2) {
       andmed=andmed
     }else {
-      andmed=andmed[andmed$allasutus==allasutus,]
+      #andmed=andmed[andmed$allasutus==allasutus,]
+      andmed=andmed[allasutus==allasutusnimi]
     }
     valueBox(
       paste(round(
@@ -215,7 +220,8 @@ KeskmineRahulolu=function(andmed, minist, allasutus, minJah, text, keel) {
     } else if (minJah==2) {
       andmed=andmed
     }else {
-      andmed=andmed[andmed$allasutus_en==allasutus,]
+      #andmed=andmed[andmed$allasutus_en==allasutus,]
+      andmed=andmed[allasutus_en==allasutusnimi]
     }
     valueBox(
       paste(round(
@@ -226,14 +232,15 @@ KeskmineRahulolu=function(andmed, minist, allasutus, minJah, text, keel) {
 }
 
 ##asutuste/minni teenuse kogukulu arvutamiseks, teeb valueboxi interface
-HalduskuluSum=function(andmed, minist, allasutus, minJah, text, keel) {
+HalduskuluSum=function(andmed, minist, allasutusnimi, minJah, text, keel) {
   if (keel=="et") {
     if (minJah==1) { #kui muu, siis on allasutus
       andmed=andmed[andmed$ministeerium==minist,]
     } else if (minJah==2) {
       andmed=andmed
     }else {
-      andmed=andmed[andmed$allasutus==allasutus,]
+      #andmed=andmed[andmed$allasutus==allasutus,]
+      andmed=andmed[allasutus==allasutusnimi]
     }
     valueBox(
       paste(
@@ -246,7 +253,8 @@ HalduskuluSum=function(andmed, minist, allasutus, minJah, text, keel) {
     } else if (minJah==2) {
       andmed=andmed
     }else {
-      andmed=andmed[andmed$allasutus_en==allasutus,]
+      #andmed=andmed[andmed$allasutus_en==allasutus,]
+      andmed=andmed[allasutus_en==allasutusnimi]
     }
     valueBox(
       paste(
@@ -258,14 +266,15 @@ HalduskuluSum=function(andmed, minist, allasutus, minJah, text, keel) {
 
 #asutuste/minni klientide ajakulu kokku arvutamiseks, teeb kohe
 #valueboxi interface
-KliendiAjakuluSum=function(andmed, minist, allasutus, minJah, text, keel) {
+KliendiAjakuluSum=function(andmed, minist, allasutusnimi, minJah, text, keel) {
   if (keel=="et") {
     if (minJah==1) { #kui muu, siis on allasutus
       andmed=andmed[andmed$ministeerium==minist,]
     } else if (minJah==2) {
       andmed=andmed
     }else {
-      andmed=andmed[andmed$allasutus==allasutus,]
+      #andmed=andmed[andmed$allasutus==allasutus,]
+      andmed=andmed[allasutus==allasutusnimi]
     }
     osutamistearv=andmed[andmed$naitaja=="osutamiste arv",]$value
     ajakulu=andmed[andmed$naitaja=="ajakulu",]$value
@@ -278,7 +287,8 @@ KliendiAjakuluSum=function(andmed, minist, allasutus, minJah, text, keel) {
     } else if (minJah==2) {
       andmed=andmed
     }else {
-      andmed=andmed[andmed$allasutus==allasutus,]
+      #andmed=andmed[andmed$allasutus==allasutus,]
+      andmed=andmed[allasutus_en==allasutusnimi]
     }
     osutamistearv=andmed[andmed$naitaja=="osutamiste arv",]$value
     ajakulu=andmed[andmed$naitaja=="ajakulu",]$value
