@@ -89,7 +89,7 @@ server <- function(input, output, session) {
   
   ########üldise vaate asjad
   #ministeeriumite arv üldine
-  output$MinArv <- renderValueBox({
+  output$MinistArv <- renderValueBox({
     valueBox(
       paste(paste(length(unique(andmed$ministeerium)))), 
       tr("ministeeriumi"),icon = icon("institution"),color = "purple")

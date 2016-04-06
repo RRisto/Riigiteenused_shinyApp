@@ -53,7 +53,7 @@ dashboardPage(
     tabItems(
       ###üldine body
       tabItem(tabName = "uldine",
-              fluidRow(width=4, valueBoxOutput("MinArv"),
+              fluidRow(width=4, valueBoxOutput("MinistArv"),
                        width=4, valueBoxOutput("AsutusteArv"),
                        width=4, valueBoxOutput("TeenusteArv")),
               fluidRow(
