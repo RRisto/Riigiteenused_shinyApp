@@ -3,7 +3,7 @@ uldine;Üldine;General
 info;Info;About
 minloikes;Ministeeriumite lõikes;By Ministry
 asutloikes;Asutuste lõikes;By Institution
-ministeeriumi;ministeeriumi;Ministries
+ministeeriumi;haldusala;Ministries
 allasutust;allasutust;Institutions
 kaardistatud teenust;kaardistatud teenust;mapped services
 keskmine rahulolu;keskmine rahulolu;average satisfaction
@@ -18,5 +18,5 @@ Haldusala;Haldusala;Administrative Area
 Vali haldusala;Vali haldusala;Choose a Administrative Area
 Vali allasutus;Vali allasutus;Choose a Institution
 Teenuste arv kanalite lõikes;Teenuste arv kanalite lõikes;No. of services in channels
-Mõõdikutega kanalite osakaal ja arv:;Mõõdikutega kanalite osakaal ja arv:;No. and % of channels with metrics
+Mõõdikutega kanalite osakaal ja arv:;Mõõdikutega kanalite osakaal ja arv;No. and % of channels with metrics
 Vali vaade;Vali vaade:;Choose a view:

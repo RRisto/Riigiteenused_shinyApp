@@ -15,7 +15,6 @@ summeerija=function(data, ...) { #... paned jutumärkidesse variabled mille jär
 #ja eelneva funktsiooni andmete visualiseerimiseks (skaala %)
 visualiseerija=function(data, mapping, ylab, ymax, title) {
   #teljepikkus=max(data$max_stat)#y-telje kõrgus
-  #localenv <- environment()
   library(ggplot2)
   library(scales)
   ggplot(data, mapping)+

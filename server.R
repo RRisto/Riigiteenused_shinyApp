@@ -109,12 +109,12 @@ server <- function(input, output, session) {
     if (input$keel=="et") {
       data <- summeerija2(andmed[andmed$naitaja=="rahulolu",], 
                           c("kanal", "identifikaator", "naitaja"))
-      visualiseerija2(data, aes(x=kanal, y=arv),
+      visualiseerija2(data, aes(x=reorder(kanal, -arv), y=arv),
                       title=as.character(tr("Teenuste arv kanalite lõikes")),"")
     } else {
       data <- summeerija2(andmed[andmed$naitaja=="rahulolu",], 
                           c("kanal_en", "identifikaator", "naitaja"))
-      visualiseerija2(data, aes(x=kanal_en, y=arv),
+      visualiseerija2(data, aes(x=reorder(kanal_en, -arv), y=arv),
                       title=as.character(tr("Teenuste arv kanalite lõikes")),"")
     }
   })
@@ -125,11 +125,13 @@ server <- function(input, output, session) {
     #################################
     if (input$keel=="et") {
       data <- summeerija(andmed, c("naitaja"))
-      visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr, label=stat_olemas_tk),
+      visualiseerija(data, aes(x=reorder(naitaja, -stat_olemas_pr),
+                               y=stat_olemas_pr, label=stat_olemas_tk),
                      title=as.character(tr("Mõõdikutega kanalite osakaal ja arv:")), "")
     } else {
       data <- summeerija(andmed, c("naitaja_en"))
-      visualiseerija(data, aes(x=naitaja_en, y=stat_olemas_pr, label=stat_olemas_tk),
+      visualiseerija(data, aes(x=reorder(naitaja_en, -stat_olemas_pr),
+                               y=stat_olemas_pr, label=stat_olemas_tk),
                      title=as.character(tr("Mõõdikutega kanalite osakaal ja arv:")), "")
     }
   })
@@ -184,11 +186,11 @@ server <- function(input, output, session) {
   output$TeenuseidKanalisMin <- renderPlot({
     if (input$keel=="et") {
       data <- summeerija2(andmed[andmed$ministeerium==input$ministeerium&andmed$naitaja=="rahulolu",], c("kanal", "identifikaator", "naitaja"))
-      visualiseerija2(data, aes(x=kanal, y=arv),
+      visualiseerija2(data, aes(x=reorder(kanal, -arv), y=arv),
                       title=as.character(tr("Teenuste arv kanalite lõikes")),"")
     } else {
       data <- summeerija2(andmed[andmed$ministeerium_en==input$ministeerium&andmed$naitaja=="rahulolu",], c("kanal_en", "identifikaator", "naitaja_en"))
-      visualiseerija2(data, aes(x=kanal_en, y=arv),
+      visualiseerija2(data, aes(x=reorder(kanal_en, -arv), y=arv),
                       title=as.character(tr("Teenuste arv kanalite lõikes")),"")
     }
   })
@@ -199,11 +201,13 @@ server <- function(input, output, session) {
     #################################
     if (input$keel=="et") {
       data <- summeerija(andmed[andmed$ministeerium==input$ministeerium,], c("naitaja"))
-      visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr, label=stat_olemas_tk),
+      visualiseerija(data, aes(x=reorder(naitaja, -stat_olemas_pr), 
+                                    y=stat_olemas_pr, label=stat_olemas_tk),
                      title=as.character(tr("Mõõdikutega kanalite osakaal ja arv:")), "")
     } else {
       data <- summeerija(andmed[andmed$ministeerium_en==input$ministeerium,], c("naitaja_en"))
-      visualiseerija(data, aes(x=naitaja_en, y=stat_olemas_pr, label=stat_olemas_tk),
+      visualiseerija(data, aes(x=reorder(naitaja_en, -stat_olemas_pr), 
+                               y=stat_olemas_pr, label=stat_olemas_tk),
                      title=as.character(tr("Mõõdikutega kanalite osakaal ja arv:")), "")
     }
   })
@@ -255,11 +259,11 @@ server <- function(input, output, session) {
   output$TeenuseidKanalisAsut <- renderPlot({
     if (input$keel=="et") {
       data <- summeerija2(andmed[andmed$allasutus==input$asutus&andmed$naitaja=="rahulolu",], c("kanal", "identifikaator", "naitaja"))
-      visualiseerija2(data, aes(x=kanal, y=arv),
+      visualiseerija2(data, aes(x=reorder(kanal, -arv), y=arv),
                       title=as.character(tr("Teenuste arv kanalite lõikes")),"")
     } else {
       data <- summeerija2(andmed[andmed$allasutus_en==input$asutus&andmed$naitaja=="rahulolu",], c("kanal_en", "identifikaator", "naitaja"))
-      visualiseerija2(data, aes(x=kanal_en, y=arv),
+      visualiseerija2(data, aes(x=reorder(kanal_en, -arv), y=arv),
                       title=as.character(tr("Teenuste arv kanalite lõikes")),"")
     }
   })
@@ -267,11 +271,13 @@ server <- function(input, output, session) {
   output$MoodikuidAsut <- renderPlot({
     if (input$keel=="et") {
       data <- summeerija(andmed[andmed$allasutus==input$asutus,], c("naitaja"))
-      visualiseerija(data, aes(x=naitaja, y=stat_olemas_pr, label=stat_olemas_tk),
+      visualiseerija(data, aes(x=reorder(naitaja, -stat_olemas_pr), 
+                               y=stat_olemas_pr, label=stat_olemas_tk),
                      title=as.character(tr("Mõõdikutega kanalite osakaal ja arv:")), "")
     } else {
       data <- summeerija(andmed[andmed$allasutus_en==input$asutus,], c("naitaja_en"))
-      visualiseerija(data, aes(x=naitaja_en, y=stat_olemas_pr, label=stat_olemas_tk),
+      visualiseerija(data, aes(x=reorder(naitaja_en,-stat_olemas_pr),
+                               y=stat_olemas_pr, label=stat_olemas_tk),
                      title=as.character(tr("Mõõdikutega kanalite osakaal ja arv:")), "")
     }
   })
