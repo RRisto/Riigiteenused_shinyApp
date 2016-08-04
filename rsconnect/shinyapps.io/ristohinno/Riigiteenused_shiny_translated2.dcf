@@ -2,8 +2,8 @@ name: Riigiteenused_shiny_translated2
 account: ristohinno
 server: shinyapps.io
 appId: 98459
-bundleId: 523577
+bundleId: 523948
 url: https://ristohinno.shinyapps.io/Riigiteenused_shiny_translated2/
-when: 1470298787.89867
+when: 1470328498.45498
 asMultiple: FALSE
 asStatic: FALSE
