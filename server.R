@@ -7,8 +7,8 @@ library(curl)
 library(data.table)
 
 #andmete sisselaadimine
-andmedLai=riigiteenused::andmedSisse("https://www.riigiteenused.ee/api/et/all")
-andmed=andmedPikaksDT(andmedLai)
+andmedLai=riigiteenused::andmedSisse()
+andmed=andmedPikaks(andmedLai)
 andmed[, ministeerium:=gsub("i haldusala", "", andmed[,ministeerium])]
 andmed[, ministeerium:=gsub("Riigikantsele", "Riigikantselei", andmed[,ministeerium])]
 andmed[, kanal:=gsub("Kliendijuures", "Kliendi juures", andmed[,kanal])]
