@@ -35,8 +35,8 @@ dashboardPage(
                  selected = "et")
     
     #####KUSTUTAMISEKS vaja ainult andmete rakendusest alla laadimiseks
-#                 downloadButton('downloadData', 'Download'),
-#                  downloadButton('downloadData2', 'Download')
+                # downloadButton('downloadData', 'Download'),
+                #  downloadButton('downloadData2', 'Download')
     ################
     
   ),

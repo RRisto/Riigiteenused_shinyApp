@@ -46,18 +46,18 @@ server <- function(input, output, session) {
   })
   
   #######KUSTUTAMISEKS vaja andmete rakendusest alla laadimiseks arendamisel
-#       output$downloadData <- downloadHandler(
-#         filename = "andmed.csv",
-#         content = function(file) {
-#           write.table(andmed, file, sep=";")
-#         }
-#       )
-#       output$downloadData2 <- downloadHandler(
-#         filename = "andmedLai.csv",
-#         content = function(file) {
-#           write.table(andmedLai[, 1:9], file, sep=";")
-#         }
-#       )
+      # output$downloadData <- downloadHandler(
+      #   filename = "andmed.csv",
+      #   content = function(file) {
+      #     write.table(andmed, file, sep=";")
+      #   }
+      # )
+      # output$downloadData2 <- downloadHandler(
+      #   filename = "andmedLai.csv",
+      #   content = function(file) {
+      #     write.table(andmedLai[, 1:9], file, sep=";")
+      #   }
+      # )
   #############
   #funktsioon interface'i tõlkimiseks
   tr <- function(text){ # translates text into current language
