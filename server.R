@@ -5,32 +5,23 @@ library(rjson)
 library(riigiteenused)
 library(curl)
 library(data.table)
+library(rsconnect)#vaja üleslaadimiseks
 
 #andmete sisselaadimine
 andmedLai=riigiteenused::andmedSisse()
 andmed=andmedPikaks(andmedLai)
-#ümbernimetamine
-andmed[, ministeerium:=gsub("i haldusala", "", andmed[,ministeerium])]
-andmed[, ministeerium:=gsub("Riigikantsele", "Riigikantselei", andmed[,ministeerium])]
-andmed[, kanal:=gsub("Kliendijuures", "Kliendi juures", andmed[,kanal])]
-andmed[, kanal:=gsub("Eesti", "Eesti.ee", andmed[,kanal])]
-andmed[, kanal:=gsub("Epost", "E-post", andmed[,kanal])]
-andmed[, naitaja:=gsub("osutamistearv", "osutamiste arv", andmed[,naitaja])]
-
-#loen sisse tõlkefailid (fread aitab encodingu probleeme ennetada)
-kanali_tolked=fread("./translations/dictionary_channels.csv", encoding = "UTF-8")
-naitaja_tolked=fread("./translations/dictionary_moodik.csv", encoding = "UTF-8")
-ministeerium_tolked=fread("./translations/dictionary_ministeeriumid.csv", encoding = "UTF-8")
-asutused_tolked=fread("./translations/dictionary_asutused.csv", encoding = "UTF-8")
+andmed=andmeMudija(andmed)
+andmed=tolked(andmed)
+#UI tolked
 translation=read.csv("./translations/dictionary_ui.csv", sep=";",stringsAsFactors = F)#tõlked interface raami jaoks
 
-#keevitan kanalite, moodikute tõlked juurde, kui siin "andmed" ridade
-#arv väheneb, on kuskil keys bugi sees
-andmed=merge(andmed, kanali_tolked, by.x="kanal", by.y="key")
-andmed=merge(andmed, naitaja_tolked, by.x="naitaja", by.y="key")
-andmed=merge(andmed, ministeerium_tolked, by.x="ministeerium", by.y="key")
-andmed=merge(andmed, asutused_tolked, by.x="allasutus", by.y="key")
-
+#ui muutujad:
+ikoonivarv="purple"
+ikoontransaktsioon="hand-o-left"
+ikoonrahulolu="smile-o"
+ikoonhalduskulu="euro"
+ikoonajakulu="clock-o"
+#ikoonajakuluBruto=NA
 #kuupäeva ja kellaaja kuvamiseks
 values <- reactiveValues() 
 
@@ -91,17 +82,18 @@ server <- function(input, output, session) {
   output$MinistArv <- renderValueBox({
     valueBox(
       paste(paste(length(unique(andmed$ministeerium)))), 
-      tr("ministeeriumi"),icon = icon("institution"),color = "purple")
+      tr("ministeeriumi"),icon = icon("institution"),color = ikoonivarv)
   })
   #allasutuste arv üldine
   output$AsutusteArv <- renderValueBox({
     valueBox(paste(length(unique(andmed$allasutus))), 
-             tr("allasutust"),icon = icon("home"),color = "purple" )
+             tr("allasutust"),icon = icon("home"),color = ikoonivarv )
   })
   #teenuste arv üldine
   output$TeenusteArv <- renderValueBox({
-    TeenusteSum(andmed=andmed, minJah=2, text=tr("kaardistatud teenust"),
-                keel=input$keel)
+    ikoonija(andmed=andmed, minJah=2,
+             text=tr("kaardistatud teenust"), keel=input$keel, 
+             ikoon="list-ol", varv=ikoonivarv, teenusteSum=T)
   })
   # plot teenuseid kanalis üldine
   output$TeenuseidKanalis <- renderPlot({
@@ -136,23 +128,37 @@ server <- function(input, output, session) {
   })
   #üldine kasutuskordade arv kokku
   output$Kasutuskordi <- renderValueBox({
-    KasutuskordadeSum(andmed=andmed, minist=input$ministeerium, minJah=2,
-                      text=tr("korda kasutati teenuseid"),keel=input$keel)
+    ikoonija(andmed=andmed, minist=input$ministeerium, minJah=2,
+             text=tr("korda kasutati teenuseid"), keel=input$keel, 
+             naitajaNimi="osutamiste arv", ikoon=ikoontransaktsioon, 
+             varv=ikoonivarv)
   })
   #üldine keskmine rahulolu
   output$Rahulolu <- renderValueBox({
-    KeskmineRahulolu(andmed=andmed, minist=input$ministeerium, minJah=2, 
-                     text=tr("keskmine rahulolu"), keel=input$keel)
+    ikoonija(andmed=andmed, minist=input$ministeerium, minJah=2,
+             text=tr("keskmine rahulolu"), keel=input$keel, 
+             naitajaNimi="rahulolu", ikoon=ikoonrahulolu, varv=ikoonivarv, 
+             arvutaKeskmine=T)
   })
   #üldine teenuste maksumus
   output$Maksumus <- renderValueBox({
-    HalduskuluSum(andmed=andmed, minist=input$ministeerium, minJah=2,
-                  text=tr("teenuste kulu riigile"), keel=input$keel)
+    ikoonija(andmed=andmed, minist=input$ministeerium, minJah=2,
+             text=tr("teenuste kulu riigile"), keel=input$keel, 
+             naitajaNimi="halduskulu", ikoon=ikoonhalduskulu, 
+             varv=ikoonivarv)
   })
   #üldine teenuste ajakulu
   output$Ajakulu <- renderValueBox({
-    KliendiAjakuluSum(andmed=andmed, minist=input$ministeerium, minJah=2,
-                      text=tr("tundi kulutasid kliendid"), keel=input$keel)
+    ikoonija(andmed=andmed, minist=input$ministeerium, minJah=2,
+             text=tr("tundi kulutasid kliendid"), keel=input$keel, 
+             naitajaNimi="ajakulu", ikoon=ikoonajakulu, 
+             varv=ikoonivarv, arvutaKeskmine = T)
+  })#üldine teenuste bruto ajakulu
+  output$AjakuluBruto <- renderValueBox({
+    ikoonija(andmed=andmed, minist=input$ministeerium, minJah=2,
+             text=tr("aegBruto"), keel=input$keel, 
+             naitajaNimi="ajakulu (bruto)", ikoon=ikoonajakulu, varv=ikoonivarv, 
+             arvutaKeskmine=T)
   })
   
   ##########ministeeriumi vaate asjad
@@ -166,19 +172,20 @@ server <- function(input, output, session) {
   })
   #ministeeriumi teenuste arv
   output$MinTeenusteArv <- renderValueBox({
-    TeenusteSum(andmed=andmed, minist=input$ministeerium, minJah=1,
-                text=tr("kaardistatud teenust"), keel=input$keel)
+    ikoonija(andmed=andmed, minJah=1,minist=input$ministeerium,
+             text=tr("kaardistatud teenust"), keel=input$keel, 
+             ikoon="list-ol", varv=ikoonivarv, teenusteSum=T)
   })
   #asutuste arv ministeeriumi haldusalas
   output$MinAsutusteArv <- renderValueBox({
     if (input$keel=="et") {
       valueBox(
         paste(length(unique(andmed[andmed$ministeerium==input$ministeerium,]$allasutus))), 
-        tr("allasutust"),icon = icon("home"),color = "purple")
+        tr("allasutust"),icon = icon("home"),color = ikoonivarv)
     } else {
       valueBox(
         paste(length(unique(andmed[andmed$ministeerium_en==input$ministeerium,]$allasutus))), 
-        tr("allasutust"),icon = icon("home"),color = "purple")
+        tr("allasutust"),icon = icon("home"),color = ikoonivarv)
     }
   })
   #plot ministeeriumi teenuseid kanali kohta
@@ -212,23 +219,38 @@ server <- function(input, output, session) {
   })
   #ministeeriumi kasutuskordade arv kokku
   output$MinKasutuskordi <- renderValueBox({
-    KasutuskordadeSum(andmed=andmed, minist=input$ministeerium, minJah=1,
-                      text=tr("korda kasutati teenuseid"), keel=input$keel)
+    ikoonija(andmed=andmed, minist=input$ministeerium, minJah=1,
+             text=tr("korda kasutati teenuseid"), keel=input$keel, 
+             naitajaNimi="osutamiste arv", ikoon=ikoontransaktsioon, 
+             varv=ikoonivarv)
   })
   #minsteeriumi keskmine rahulolu
   output$MinRahulolu <- renderValueBox({
-    KeskmineRahulolu(andmed=andmed, minist=input$ministeerium, minJah=1,
-                     text=tr("keskmine rahulolu"), keel=input$keel)
+    ikoonija(andmed=andmed, minist=input$ministeerium, minJah=1,
+             text=tr("keskmine rahulolu"), keel=input$keel, 
+             naitajaNimi="rahulolu", ikoon=ikoonrahulolu, 
+             varv=ikoonivarv, arvutaKeskmine = T)
   })
   #ministeeriumi teenuste maksumus
   output$MinMaksumus <- renderValueBox({
-    HalduskuluSum(andmed=andmed, minist=input$ministeerium, minJah=1,
-                  text=tr("teenuste kulu riigile"), keel=input$keel)
+    ikoonija(andmed=andmed, minist=input$ministeerium, minJah=1,
+             text=tr("teenuste kulu riigile"), keel=input$keel, 
+             naitajaNimi="halduskulu", ikoon=ikoonhalduskulu, 
+             varv=ikoonivarv)
   })
   #ministeeriumi teenuste ajakulu
   output$MinAjakulu <- renderValueBox({
-    KliendiAjakuluSum(andmed=andmed, minist=input$ministeerium, minJah=1,
-                      text=tr("tundi kulutasid kliendid"), keel=input$keel)
+    ikoonija(andmed=andmed, minist=input$ministeerium, minJah=1,
+             text=tr("tundi kulutasid kliendid"), keel=input$keel, 
+             naitajaNimi="ajakulu", ikoon=ikoonajakulu, 
+             varv=ikoonivarv, arvutaKeskmine = T)
+  })
+  #ministeeriumi teenuste ajakulu bruto
+  output$MinAjakuluBruto <- renderValueBox({
+    ikoonija(andmed=andmed, minist=input$ministeerium, minJah=1,
+             text=tr("aegBruto"), keel=input$keel, 
+             naitajaNimi="ajakulu (bruto)", ikoon=ikoonajakulu, varv=ikoonivarv, 
+             arvutaKeskmine=T)
   })
   
   ############################allasutuste asjad
@@ -251,8 +273,9 @@ server <- function(input, output, session) {
   #allasutuse teenuste arv
   output$AsutTeenusteArv <- renderValueBox({
     #plot teenuseid kanalis 
-    TeenusteSum(andmed=andmed, allasutusnimi =input$asutus, minJah=0,
-                text=tr("kaardistatud teenust"), keel=input$keel)
+    ikoonija(andmed=andmed, minJah=0,allasutusnimi =input$asutus,
+             text=tr("kaardistatud teenust"), keel=input$keel, 
+             ikoon="list-ol", varv=ikoonivarv, teenusteSum=T)
   })
   #plot teenuseid kanalite lõikes
   output$TeenuseidKanalisAsut <- renderPlot({
@@ -282,26 +305,38 @@ server <- function(input, output, session) {
   })
   #asutuse kasutuskordade arv kokku
   output$AsutKasutuskordi <- renderValueBox({
-    KasutuskordadeSum(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
-                      text=tr("korda kasutati teenuseid"), keel=input$keel)
+    ikoonija(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
+             text=tr("korda kasutati teenuseid"), keel=input$keel, 
+             naitajaNimi="osutamiste arv", ikoon=ikoontransaktsioon, varv=ikoonivarv)
   })
   #asutuse keskmine rahulolu
   output$AsutRahulolu <- renderValueBox({
-    KeskmineRahulolu(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
-                     text=tr("keskmine rahulolu"), keel=input$keel)
+    ikoonija(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
+             text=tr("keskmine rahulolu"), keel=input$keel, 
+             naitajaNimi="rahulolu", ikoon=ikoonrahulolu, varv=ikoonivarv, 
+             arvutaKeskmine=T)
   })
   #asutuse teenuste maksumus
   output$AsutMaksumus <- renderValueBox({
-    HalduskuluSum(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
-                  text=tr("teenuste kulu riigile"), keel=input$keel)
+    ikoonija(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
+             text=tr("teenuste kulu riigile"), keel=input$keel, 
+             naitajaNimi="halduskulu", ikoon=ikoonhalduskulu, varv=ikoonivarv)
   })
   #asutuse teenuste ajakulu
   output$AsutAjakulu <- renderValueBox({
     #     ########kui joonistab graafikuid, siis kuvab teate
     ooteTekst()
     #################################
-    KliendiAjakuluSum(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
-                      text=tr("tundi kulutasid kliendid"), keel=input$keel)
+    ikoonija(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
+              text=tr("tundi kulutasid kliendid"), keel=input$keel, 
+              naitajaNimi="ajakulu", ikoon=ikoonajakulu, varv=ikoonivarv, 
+              arvutaKeskmine=T)
+  })#brutoajakulu 
+  output$AsutAjakuluBruto <- renderValueBox({
+     ikoonija(andmed=andmed, allasutusnimi=input$asutus, minJah=0,
+             text=tr("aegBruto"), keel=input$keel, 
+             naitajaNimi="ajakulu (bruto)", ikoon=ikoonajakulu, varv=ikoonivarv, 
+             arvutaKeskmine=T)
   })
   ###########info tabi tõlked
   output$info1=renderText({

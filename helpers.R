@@ -1,6 +1,34 @@
 #########Igasugu abifunktsioone
 #############Statistika, graafika funktsioonid
+#algne andmete mudimine
+andmeMudija=function(andmed){
+  andmed=data.table(andmed)
+  andmed$value=as.numeric(andmed$value)
+  #ümbernimetamine
+  andmed[, ministeerium:=gsub("i haldusala", "", andmed[,ministeerium])]
+  andmed[, ministeerium:=gsub("Riigikantsele", "Riigikantselei", andmed[,ministeerium])]
+  andmed[, kanal:=gsub("Epost", "E-post", andmed[,kanal])]
+  andmed[, kanal:=gsub("Veebileht / portaal", "Veebileht", andmed[,kanal])]
+  andmed[, naitaja:=gsub("osutamistearv", "osutamiste arv", andmed[,naitaja])]
+  andmed[, naitaja:=gsub("ajakuluBruto", "ajakulu (bruto)", andmed[,naitaja])]
+  andmed
+}
+#tõlgete külge liitmine
+tolked=function(andmed) {
+  #loen sisse tõlkefailid (fread aitab encodingu probleeme ennetada)
+  kanali_tolked=fread("./translations/dictionary_channels.csv", encoding = "UTF-8")
+  naitaja_tolked=fread("./translations/dictionary_moodik.csv", encoding = "UTF-8")
+  ministeerium_tolked=fread("./translations/dictionary_ministeeriumid.csv", encoding = "UTF-8")
+  asutused_tolked=fread("./translations/dictionary_asutused.csv", encoding = "UTF-8")
 
+  #keevitan kanalite, moodikute tõlked juurde, kui siin "andmed" ridade
+  #ridade arv väheneb, on kuskil keys bugi sees/puudu
+  andmed=merge(andmed, kanali_tolked, by.x="kanal", by.y="key")
+  andmed=merge(andmed, naitaja_tolked, by.x="naitaja", by.y="key")
+  andmed=merge(andmed, ministeerium_tolked, by.x="ministeerium", by.y="key")
+  andmed=merge(andmed, asutused_tolked, by.x="allasutus", by.y="key")
+  andmed
+}
 #abifunktsioon andmete summeerimiseks
 summeerija=function(data, ...) { #... paned jutumärkidesse variabled mille järgi grupeerida
   library(dplyr)
@@ -31,7 +59,6 @@ visualiseerija=function(data, mapping, ylab, ymax, title) {
     ggtitle(title)
 }
 
-
 #summeerija, ei tooda protsente
 summeerija2=function(data, ...) { #... paned jutumärkidesse variabled mille järgi grupeerida
   library(dplyr)
@@ -52,160 +79,39 @@ visualiseerija2=function(data, mapping, ylab, title) {
     #ggtitle(enc2native("Teenuste arv kanalite lõikes"))
     ggtitle(enc2native(title))
 }
-#teenuste arv minni/asutuse haldusalas, teeb valueboxi interface
-TeenusteSum=function(andmed, minist, allasutusnimi, minJah, text, keel) {
-  if (keel=="et") {
-    if (minJah==1) { #kui muu, siis on allasutus
-      andmed=andmed[andmed$ministeerium==minist,]
-    } else if (minJah==2) {
-      andmed=andmed
-    } else    {
-     # andmed=andmed[andmed$allasutus==allasutus,]
-      andmed=andmed[allasutus==allasutusnimi]
-    }
-    valueBox(
-      paste(length(unique(andmed$identifikaator))), 
-      text,icon = icon("list-ol"),color = "purple")
-  } else {
-    if (minJah==1) { #kui muu, siis on allasutus
-      andmed=andmed[andmed$ministeerium_en==minist,]
-    } else if (minJah==2) {
-      andmed=andmed
-    } else    {
-      #andmed=andmed[andmed$allasutus_en==allasutus,]
-      andmed=andmed[allasutus_en==allasutusnimi]
-    }
-    valueBox(
-      paste(length(unique(andmed$identifikaator))), 
-      text,icon = icon("list-ol"),color = "purple")
-  }
-}
 
-#kasutuskordade summa arvutamiseks, teeb vale boxi interface
-KasutuskordadeSum=function(andmed, minist, allasutusnimi, minJah, text, keel) {
-  if (keel=="et") {
-    if (minJah==1) { #kui muu, siis on allasutus
-      andmed=andmed[andmed$ministeerium==minist,]
-    } else if (minJah==2) {
-      andmed=andmed
-    }else if (minJah==0) {
-      #andmed=andmed[andmed$allasutus==allasutus,]
-      andmed=andmed[allasutus==allasutusnimi]
-    }
-    valueBox(
-      paste(format(sum(andmed[andmed$naitaja=="osutamiste arv",]$value, na.rm = T), big.mark=" ")), 
-      text,icon = icon("hand-o-left"),color = "purple")
-  } else if (keel=="en") {
-    if (minJah==1) { #kui muu, siis on allasutus
-      andmed=andmed[andmed$ministeerium_en==minist,]
-    } else if (minJah==2) {
-      andmed=andmed
-    }else {
-      #andmed=andmed[andmed$allasutus_en==allasutus,]
-      andmed=andmed[allasutus_en==allasutusnimi]
-    }
-    valueBox(
-      paste(format(sum(andmed[andmed$naitaja=="osutamiste arv",]$value, na.rm = T), big.mark=" ")), 
-      text,icon = icon("hand-o-left"),color = "purple")
-  }
-}
-
-#keskmise rahulolu arvutamiseks, teeb value boxi kohe interfaces
-KeskmineRahulolu=function(andmed, minist, allasutusnimi, minJah, text, keel) {
+#funktsioon, mis loob appile ikoonid
+ikoonija=function(andmed, minist, allasutusnimi, minJah, text, keel, 
+                   naitajaNimi=NA, ikoon, varv, arvutaKeskmine=F, 
+                  teenusteSum=F) {
   if (keel=="et") {
     if (minJah==1) { #kui muu, siis on allasutus
       andmed=andmed[andmed$ministeerium==minist,]
     } else if (minJah==2) {
       andmed=andmed
     }else {
-      #andmed=andmed[andmed$allasutus==allasutus,]
       andmed=andmed[allasutus==allasutusnimi]
     }
-    valueBox(
-      paste(round(
-        mean(
-          andmed[andmed$naitaja=="rahulolu",]$value, na.rm = T), 1)) 
-      ,paste("%", text),icon = icon("smile-o"),color = "purple")
-  } else {#kui on inglise keel
+  } else {#keel=="en"
     if (minJah==1) { #kui muu, siis on allasutus
       andmed=andmed[andmed$ministeerium_en==minist,]
     } else if (minJah==2) {
       andmed=andmed
     }else {
-      #andmed=andmed[andmed$allasutus_en==allasutus,]
       andmed=andmed[allasutus_en==allasutusnimi]
     }
-    valueBox(
-      paste(round(
-        mean(
-          andmed[andmed$naitaja=="rahulolu",]$value, na.rm = T), 1)) 
-      ,paste("%", text),icon = icon("smile-o"),color = "purple")
   }
-}
-
-##asutuste/minni teenuse kogukulu arvutamiseks, teeb valueboxi interface
-HalduskuluSum=function(andmed, minist, allasutusnimi, minJah, text, keel) {
-  if (keel=="et") {
-    if (minJah==1) { #kui muu, siis on allasutus
-      andmed=andmed[andmed$ministeerium==minist,]
-    } else if (minJah==2) {
-      andmed=andmed
-    }else {
-      #andmed=andmed[andmed$allasutus==allasutus,]
-      andmed=andmed[allasutus==allasutusnimi]
+  if (teenusteSum==T) {#teenuste summa
+    arvud=length(unique(andmed$identifikaator))
+  } else if (teenusteSum==F) {
+    arvud=andmed[naitaja==naitajaNimi, value]
+    if (arvutaKeskmine==T) {#vaja muutuja keskmine
+      arvud=mean(arvud, na.rm=T)
+    } else {#siis kui vaja võtta näitaja summa
+      arvud=sum(arvud ,na.rm=T)
     }
-    valueBox(
-      paste(
-        format(round(
-          sum(andmed[andmed$naitaja=="halduskulu",]$value, na.rm = T)), big.mark=" ")), 
-      text,icon = icon("euro"),color = "purple")
-  } else {
-    if (minJah==1) { #kui muu, siis on allasutus
-      andmed=andmed[andmed$ministeerium_en==minist,]
-    } else if (minJah==2) {
-      andmed=andmed
-    }else {
-      #andmed=andmed[andmed$allasutus_en==allasutus,]
-      andmed=andmed[allasutus_en==allasutusnimi]
-    }
-    valueBox(
-      paste(
-        format(round(
-          sum(andmed[andmed$naitaja=="halduskulu",]$value, na.rm = T)), big.mark=" ")), 
-      text,icon = icon("euro"),color = "purple")
-  }
-}
-
-#asutuste/minni klientide ajakulu kokku arvutamiseks, teeb kohe
-#valueboxi interface
-KliendiAjakuluSum=function(andmed, minist, allasutusnimi, minJah, text, keel) {
-  if (keel=="et") {
-    if (minJah==1) { #kui muu, siis on allasutus
-      andmed=andmed[andmed$ministeerium==minist,]
-    } else if (minJah==2) {
-      andmed=andmed
-    }else {
-      #andmed=andmed[andmed$allasutus==allasutus,]
-      andmed=andmed[allasutus==allasutusnimi]
-    }
-    osutamistearv=andmed[andmed$naitaja=="osutamiste arv",]$value
-    ajakulu=andmed[andmed$naitaja=="ajakulu",]$value
-    valueBox(
-      paste(paste(format(round(sum(ajakulu*osutamistearv ,na.rm=T)), big.mark=" "))), 
-      text,icon = icon("clock-o"),color = "purple")
-  } else {
-    if (minJah==1) { #kui muu, siis on allasutus
-      andmed=andmed[andmed$ministeerium_en==minist,]
-    } else if (minJah==2) {
-      andmed=andmed
-    }else {
-      #andmed=andmed[andmed$allasutus==allasutus,]
-      andmed=andmed[allasutus_en==allasutusnimi]
-    }
-    osutamistearv=andmed[andmed$naitaja=="osutamiste arv",]$value
-    ajakulu=andmed[andmed$naitaja=="ajakulu",]$value
-    valueBox(
-      paste(paste(format(round(sum(ajakulu*osutamistearv ,na.rm=T)), big.mark=" "))), 
-      text,icon = icon("clock-o"),color = "purple")
-  }
+  } 
+  valueBox(
+    paste(paste(format(round(arvud), big.mark=" "))), 
+    text,icon = icon(ikoon),color = varv)
 }

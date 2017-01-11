@@ -1,22 +1,23 @@
 key;et;en
-uldine;Üldine;General
+uldine;Ãœldine;General
 info;Info;About
-minloikes;Ministeeriumite lõikes;By Ministry
-asutloikes;Asutuste lõikes;By Institution
-ministeeriumi;ministeeriumi;Ministries
+minloikes;Ministeeriumite lÃµikes;By Ministry
+asutloikes;Asutuste lÃµikes;By Institution
+ministeeriumi;haldusala;Ministries
 allasutust;allasutust;Institutions
 kaardistatud teenust;kaardistatud teenust;mapped services
 keskmine rahulolu;keskmine rahulolu;average satisfaction
 korda kasutati teenuseid;korda kasutati teenuseid;transactions
 teenuste kulu riigile;teenuste kulu riigile;cost to Government
-tundi kulutasid kliendid;tundi kulutasid kliendid;hours clients spent
+tundi kulutasid kliendid;keskmine ajakulu (h);average hours spent
+aegBruto;keskmine ajakulu koos ooteajaga (h);average hours spent (incl waiting)
 Andmed on seisuga;Andmed on seisuga;Data was downloaded
 info_key1;Tegemist on riigiteenuste andmete visualiseeringuga. Projekti kohta loe siit:;This is visualisation of Estonian governement services statistics, for more information about the project follow the link:
-info_key2;Kuna tegemist on pilootprojektiga ning mõõtmismetoodika on kujunemisjärgus, on andmetest järelduste tegemine omal vastutusel!;Because this is pilot project and methods for collecting statistics are being developed all conclusions based on this data must be very caucious!
+info_key2;Kuna tegemist on pilootprojektiga ning mÃµÃµtmismetoodika on kujunemisjÃ¤rgus, on andmetestÂ jÃ¤relduste tegemine omal vastutusel!;Because this is pilot project and methods for collecting statistics are being developed all conclusions based on this data must be very caucious!
 info_key3;Rakenduse kood on siin:;Code for this app is here:
 Haldusala;Haldusala;Administrative Area
 Vali haldusala;Vali haldusala;Choose a Administrative Area
 Vali allasutus;Vali allasutus;Choose a Institution
-Teenuste arv kanalite lõikes;Teenuste arv kanalite lõikes:;No. and % of services in channels
-Mõõdikutega kanalite osakaal ja arv:;Mõõdikutega kanalite osakaal ja arv:;No. and % of channels with metrics
+Teenuste arv kanalite lÃµikes;Teenuste arv kanalite lÃµikes;No. of services in channels
+MÃµÃµdikutega kanalite osakaal ja arv:;MÃµÃµdikutega kanalite osakaal ja arv;No. and % of channels with metrics
 Vali vaade;Vali vaade:;Choose a view:

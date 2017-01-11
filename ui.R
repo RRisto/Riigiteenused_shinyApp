@@ -63,7 +63,8 @@ dashboardPage(
                 width=4, valueBoxOutput("Kasutuskordi"),
                 width=4, valueBoxOutput("Rahulolu"),
                 width=4, valueBoxOutput("Maksumus"),
-                width=4, valueBoxOutput("Ajakulu")
+                width=4, valueBoxOutput("Ajakulu"),
+                width=4, valueBoxOutput("AjakuluBruto")
               )
       ),
       ####ministeeriumite lõikes body
@@ -83,7 +84,8 @@ dashboardPage(
                 width=4, valueBoxOutput("MinKasutuskordi"),
                 width=4, valueBoxOutput("MinRahulolu"),
                 width=4, valueBoxOutput("MinMaksumus"),
-                width=4, valueBoxOutput("MinAjakulu")
+                width=4, valueBoxOutput("MinAjakulu"),
+                width=4, valueBoxOutput("MinAjakuluBruto")
               )
       ),
       ####asutuste lõikes body
@@ -104,7 +106,8 @@ dashboardPage(
                        valueBoxOutput("AsutKasutuskordi"),
                        valueBoxOutput("AsutRahulolu"),
                        valueBoxOutput("AsutMaksumus"),
-                       valueBoxOutput("AsutAjakulu")
+                       valueBoxOutput("AsutAjakulu"),
+                       valueBoxOutput("AsutAjakuluBruto")
               )
       ),
       

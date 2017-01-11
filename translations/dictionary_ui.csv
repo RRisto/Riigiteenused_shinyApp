@@ -9,7 +9,8 @@ kaardistatud teenust;kaardistatud teenust;mapped services
 keskmine rahulolu;keskmine rahulolu;average satisfaction
 korda kasutati teenuseid;korda kasutati teenuseid;transactions
 teenuste kulu riigile;teenuste kulu riigile;cost to Government
-tundi kulutasid kliendid;tundi kulutasid kliendid;hours clients spent
+tundi kulutasid kliendid;keskmine ajakulu teenuse kohta (min);average time spent per service (minutes)
+aegBruto;keskmine ajakulu koos ooteajaga teenuse kohta (min);average time spent (incl waiting) per service (minutes)
 Andmed on seisuga;Andmed on seisuga;Data was downloaded
 info_key1;Tegemist on riigiteenuste andmete visualiseeringuga. Projekti kohta loe siit:;This is visualisation of Estonian governement services statistics, for more information about the project follow the link:
 info_key2;Kuna tegemist on pilootprojektiga ning mõõtmismetoodika on kujunemisjärgus, on andmetest järelduste tegemine omal vastutusel!;Because this is pilot project and methods for collecting statistics are being developed all conclusions based on this data must be very caucious!
