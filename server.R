@@ -9,6 +9,8 @@ library(rsconnect)#vaja üleslaadimiseks
 
 #andmete sisselaadimine
 andmedLai=riigiteenused::andmedSisse()
+#sometimes some crap gets in
+andmedLai=andmedLai[!is.na(andmedLai$createdAt),]
 andmed=andmedPikaks(andmedLai)
 andmed=andmeMudija(andmed)
 andmed=tolked(andmed)
