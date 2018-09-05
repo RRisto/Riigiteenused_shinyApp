@@ -1,9 +1,10 @@
-###Riigiteenuste dashboard
+### Riigiteenuste dashboard
 
 Riigiteenuste [masinloetavate andmete](https://www.riigiteenused.ee/api/et/all "https://www.riigiteenused.ee/api/et/all") inimloetavamaks kuvamiseks loodud [rakenduse](https://ristohinno.shinyapps.io/Riigiteenused_dashboard "https://ristohinno.shinyapps.io/Riigiteenused_dashboard") kood. Kogu riigiteenuste kaardistamise kohta loe [siit](https://github.com/MKM-ITAO/riigiteenused "https://github.com/MKM-ITAO/riigiteenused"). 
 
-##Rakendusest
-###Tõlkimine
+## Rakendusest
+
+### Tõlkimine
 
 Tõlkefailid asuvad kaustas "translations". Algselt tundus, et kui tahad midagi tõlgetes muuta, tee seda failides, mis asuvad kausta "translations" alamkaustas "algfailid". Samas võib õnnestuda muuta tõlkeid otse kaustas "translations". Kui midagi oled muutnud, siis kasuta abiskript.R-s asuvat abiskripti, mis salvestab failid õiges kodeeringus (kui unustad seda teha, siis rakendus ei pruugi shiny serveris töötada või hakkab täpitähtedega jurama).
 
